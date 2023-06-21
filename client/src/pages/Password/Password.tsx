@@ -32,22 +32,25 @@ const Password = () => {
 
   return (
     <Container>
-      <div className="shadow-md rounded-xl px-12 py-6 max-w-sm text-center flex flex-col gap-5 bg-white">
-        <div className="w-full flex flex-col items-center gap-2">
-          <h1 className="text-3xl font-semibold">Welcome Username</h1>
+      <div className="shadow-md rounded-xl px-12 py-14 max-w-sm text-center flex flex-col bg-white">
+        <div className="w-full flex flex-col items-center gap-2 mb-8">
+          <div>
+            <h1 className="text-3xl font-semibold">Welcome Back</h1>
+            <h1 className="text-2xl font-medium">Username</h1>
+          </div>
           <p className="text-gray-400 text-xs max-w-[16rem]">
             And now please enter your password to get in
           </p>
         </div>
 
-        <div className="w-full text-center flex items-center justify-center">
+        <div className="w-full text-center flex items-center justify-center mb-8">
           <img
             src={ProfileImage}
-            className="w-2/3 rounded-full border-2 border-white shadow-md"
+            className="w-2/4 rounded-full border-2 border-white shadow-md"
           />
         </div>
 
-        <div className="relative w-full flex flex-col gap-3 rounded-md overflow-hidden">
+        <div className="relative w-full flex flex-col rounded-md overflow-hidden">
           <input
             {...formik.getFieldProps("password")}
             type={inputType}
@@ -65,21 +68,22 @@ const Password = () => {
             </button>
           )}
         </div>
+
         <button
+          className="bg-emerald-400 rounded-md py-2 text-sm mt-2 transition-all duration-150 hover:bg-emerald-500"
           onClick={(e) => {
             e.preventDefault();
             formik.handleSubmit();
           }}
-          className="bg-emerald-400 rounded-md py-2 text-sm transition-all duration-150 hover:bg-emerald-500"
         >
-          Continue
+          Sign In
         </button>
 
-        <div className="mb-4">
+        <div className="mb-4 mt-5">
           <p className="text-xs">
-            Don't have an account?{" "}
+            Forget your password?{" "}
             <Link to="/register" className="font-semibold">
-              Register Now
+              Recover Now
             </Link>
           </p>
         </div>
