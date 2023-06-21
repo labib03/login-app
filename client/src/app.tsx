@@ -1,7 +1,17 @@
+import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import { LoginPage } from "./pages";
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <LoginPage />,
+  },
+]);
+
 export function App() {
   return (
     <>
-      <h1 className="text-3xl font-bold underline bg-red-400">Hello world!</h1>
+      <RouterProvider router={router} />
     </>
   );
 }
