@@ -11,5 +11,5 @@ body {
 }
 
 input {
-  @apply outline-none ring-0;
+  @apply outline-none ring-0 appearance-none;
 }

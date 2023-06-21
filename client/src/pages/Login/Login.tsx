@@ -1,15 +1,29 @@
 import { Container } from "../../components";
 import ProfileImage from "../../assets/profile.png";
 import { Link } from "react-router-dom";
+import { useFormik } from "formik";
 
 const Login = () => {
+  const formik = useFormik({
+    initialValues: {
+      username: "",
+    },
+    validateOnBlur: false,
+    validateOnChange: false,
+    onSubmit: async (values) => {
+      console.log(values);
+    },
+  });
+
+  const isHasValue = formik?.values?.username?.length > 0;
+
   return (
     <Container>
       <div className="shadow-md rounded-xl px-12 py-6 max-w-sm text-center flex flex-col gap-5 bg-white">
         <div className="w-full flex flex-col items-center gap-2">
           <h1 className="text-3xl font-semibold">Welcome Back</h1>
           <p className="text-gray-400 text-xs max-w-[16rem]">
-            Hey, enter your email to get sign in to your account
+            Hey, enter your username to get sign in to your account
           </p>
         </div>
 
@@ -20,21 +34,32 @@ const Login = () => {
           />
         </div>
 
-        <div>
-          <form className="flex flex-col gap-3">
+        <form className="flex flex-col gap-3" onSubmit={formik.handleSubmit}>
+          <div className="relative w-full rounded-md overflow-hidden">
             <input
+              {...formik.getFieldProps("username")}
               type="text"
-              placeholder="email address"
-              className="border border-slate-100 px-2 py-2 rounded-md transition-all duration-200 focus:border-slate-300 placeholder:text-sm"
+              placeholder="Username"
+              className={`border w-full border-slate-100 pl-3 rounded-md  py-2 transition-all duration-200 focus:border-slate-300 placeholder:text-sm placeholder:text-center focus:placeholder:opacity-0 ${
+                isHasValue ? "pr-12" : "pr-3"
+              }`}
             />
-            <button
-              type="submit"
-              className="bg-emerald-400 rounded-md py-2 text-sm transition-all duration-150 hover:bg-emerald-500"
-            >
-              Continue
-            </button>
-          </form>
-        </div>
+            {isHasValue && (
+              <button
+                className="h-full px-1.5 text-xs absolute right-0 top-0 bg-stone-50 border-t border-r border-b border-slate-300 rounded-e-md"
+                onClick={formik.handleReset}
+              >
+                clear
+              </button>
+            )}
+          </div>
+          <button
+            type="submit"
+            className="bg-emerald-400 rounded-md py-2 text-sm transition-all duration-150 hover:bg-emerald-500"
+          >
+            Continue
+          </button>
+        </form>
 
         <div className="mb-4">
           <p className="text-xs">
