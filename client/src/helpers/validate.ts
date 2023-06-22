@@ -4,6 +4,7 @@ type props = {
   username?: string | undefined;
   email?: string | undefined;
   password?: string | undefined;
+  confirm_password?: string | undefined;
 };
 
 /** validate login page username */

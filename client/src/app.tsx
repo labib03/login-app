@@ -1,5 +1,11 @@
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
-import { ErrorPage, LoginPage, PasswordPage, RecoverPage } from "./pages";
+import {
+  ErrorPage,
+  LoginPage,
+  PasswordPage,
+  RecoverPage,
+  ResetPasswordPage,
+} from "./pages";
 
 const router = createBrowserRouter([
   {
@@ -14,6 +20,10 @@ const router = createBrowserRouter([
   {
     path: "/recover",
     element: <RecoverPage />,
+  },
+  {
+    path: "/reset",
+    element: <ResetPasswordPage />,
   },
 ]);
 
