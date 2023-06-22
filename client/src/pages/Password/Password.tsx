@@ -3,6 +3,7 @@ import { Link } from "react-router-dom";
 import ProfileImage from "../../assets/profile.png";
 import { Container } from "../../components";
 import { useState } from "preact/hooks";
+import { passwordValidate } from "../../helpers/validate";
 
 const Password = () => {
   const [inputType, setInputType] = useState("password");
@@ -10,7 +11,7 @@ const Password = () => {
     initialValues: {
       password: "",
     },
-    // validate: usernameValidate,
+    validate: passwordValidate,
     validateOnBlur: false,
     validateOnChange: false,
     onSubmit: async (values) => {
@@ -33,6 +34,10 @@ const Password = () => {
   return (
     <Container>
       <div className="shadow-md rounded-xl px-12 py-14 max-w-sm text-center flex flex-col bg-white">
+        <div className="absolute top-5 left-5">
+          <Link to="/">Back</Link>
+        </div>
+
         <div className="w-full flex flex-col items-center gap-2 mb-8">
           <div>
             <h1 className="text-3xl font-semibold">Welcome Back</h1>
