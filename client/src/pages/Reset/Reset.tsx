@@ -1,9 +1,9 @@
 import { useFormik } from "formik";
+import { useState } from "preact/hooks";
 import { Link } from "react-router-dom";
 import ProfileImage from "../../assets/profile.png";
 import { Container } from "../../components";
-import { useState } from "preact/hooks";
-import { passwordValidate } from "../../helpers/validate";
+import { resetPasswordValidation } from "../../helpers/validate";
 
 const Reset = () => {
   const [inputType, setInputType] = useState("password");
@@ -12,7 +12,7 @@ const Reset = () => {
       password: "",
       confirm_password: "",
     },
-    validate: passwordValidate,
+    validate: resetPasswordValidation,
     validateOnBlur: false,
     validateOnChange: false,
     onSubmit: async (values) => {

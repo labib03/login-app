@@ -5,7 +5,10 @@ type props = {
   email?: string | undefined;
   password?: string | undefined;
   confirm_password?: string | undefined;
+  exist?: string | undefined;
 };
+
+// ========== VALIDATOR ========== //
 
 /** validate login page username */
 export async function usernameValidate(values: props) {
@@ -17,6 +20,17 @@ export async function usernameValidate(values: props) {
 /** validate password */
 export async function passwordValidate(values: props) {
   const errors = passwordVerify({}, values);
+
+  return errors;
+}
+
+/** validate reset password */
+export async function resetPasswordValidation(values: props) {
+  const errors = passwordVerify({}, values);
+
+  if (values.password !== values.confirm_password) {
+    errors.exist = toast.error("Password not match...!");
+  }
 
   return errors;
 }
