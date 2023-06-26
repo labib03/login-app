@@ -4,6 +4,7 @@ import {
   LoginPage,
   PasswordPage,
   RecoverPage,
+  RegisterPage,
   ResetPasswordPage,
 } from "./pages";
 
@@ -24,6 +25,10 @@ const router = createBrowserRouter([
   {
     path: "/reset",
     element: <ResetPasswordPage />,
+  },
+  {
+    path: "/register",
+    element: <RegisterPage />,
   },
 ]);
 
