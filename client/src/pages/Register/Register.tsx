@@ -3,10 +3,12 @@ import ProfileImage from "../../assets/profile.png";
 import { Link } from "react-router-dom";
 import { useFormik } from "formik";
 import { useState } from "preact/hooks";
+import convertToBase64 from "../../helpers/convert";
+import React from "preact/compat";
 
 const Register = () => {
   const [inputType, setInputType] = useState("password");
-  const [file, setFile] = useState("");
+  const [file, setFile] = useState<File | any>();
 
   const formik = useFormik({
     initialValues: {
@@ -18,6 +20,7 @@ const Register = () => {
     validateOnBlur: false,
     validateOnChange: false,
     onSubmit: async (values) => {
+      values = await Object.assign(values, { profile: file || "" });
       console.log(values);
     },
   });
@@ -41,8 +44,9 @@ const Register = () => {
   };
 
   // for handle file upload, cuz formik doesn't support file upload
-  const onUpload = async (e) => {
-    const base64 = "";
+  const onUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.currentTarget.files ? e.currentTarget.files[0] : null;
+    const base64 = await convertToBase64(file);
     setFile(base64);
   };
 
@@ -62,14 +66,20 @@ const Register = () => {
             className="flex items-center justify-center hover:cursor-pointer"
           >
             <img
-              src={ProfileImage}
+              src={file || ProfileImage}
               className="w-2/4 rounded-full border-2 border-white shadow-md"
             />
           </label>
 
-          <input type="file" id="profile" name="profile" className="hidden" />
+          <input
+            onChange={onUpload}
+            type="file"
+            id="profile"
+            name="profile"
+            className="hidden"
+          />
           <small className="text-xs italic">
-            *You can change profile photo
+            *You can change profile photo (jpg format)
           </small>
         </div>
 
@@ -88,8 +98,6 @@ const Register = () => {
                 className="h-full px-1.5 text-xs absolute right-0 top-0 bg-stone-50 border-t border-r border-b border-slate-300 rounded-e-md transition-all duration-200"
                 onClick={() => {
                   fieldResetHandler("email");
-                  const check = formik.getFieldProps("email");
-                  console.log("check =>", check.value);
                 }}
               >
                 clear
@@ -139,6 +147,7 @@ const Register = () => {
         </div>
 
         <button
+          type="submit"
           className="bg-emerald-400 rounded-md py-2 text-sm mt-3 transition-all duration-150 hover:bg-emerald-500"
           onClick={(e) => {
             e.preventDefault();
