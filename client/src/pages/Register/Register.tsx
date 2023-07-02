@@ -67,7 +67,7 @@ const Register = () => {
           >
             <img
               src={file || ProfileImage}
-              className="w-2/4 rounded-full border-2 border-white shadow-md"
+              className="w-2/4 overflow-hidden rounded-full border-2 border-white shadow-md"
             />
           </label>
 
@@ -77,9 +77,10 @@ const Register = () => {
             id="profile"
             name="profile"
             className="hidden"
+            accept="image/*"
           />
           <small className="text-xs italic">
-            *You can change profile photo (jpg format)
+            *You can change profile photo
           </small>
         </div>
 
@@ -89,7 +90,7 @@ const Register = () => {
               {...formik.getFieldProps("email")}
               type="text"
               placeholder="Email"
-              className={`border w-full border-slate-100 pl-3 rounded-md  py-2 transition-all duration-200 focus:border-slate-300 placeholder:text-sm placeholder:text-center focus:placeholder:opacity-0  ${
+              className={`text-sm border w-full border-slate-100 pl-3 rounded-md  py-2 transition-all duration-200 focus:border-slate-300 placeholder:text-sm placeholder:text-center focus:placeholder:opacity-0  ${
                 isShown("email") ? "pr-12 border-slate-300" : "pr-3"
               }`}
             />
@@ -110,7 +111,7 @@ const Register = () => {
               {...formik.getFieldProps("username")}
               type="text"
               placeholder="Username"
-              className={`border w-full border-slate-100 pl-3 rounded-md  py-2 transition-all duration-200 focus:border-slate-300 placeholder:text-sm placeholder:text-center focus:placeholder:opacity-0  ${
+              className={`text-sm border w-full border-slate-100 pl-3 rounded-md  py-2 transition-all duration-200 focus:border-slate-300 placeholder:text-sm placeholder:text-center focus:placeholder:opacity-0  ${
                 isShown("username") ? "pr-12 border-slate-300" : "pr-3"
               }`}
             />
@@ -131,7 +132,7 @@ const Register = () => {
               {...formik.getFieldProps("password")}
               type={inputType}
               placeholder="Password"
-              className={`border w-full border-slate-100 pl-3 rounded-md  py-2 transition-all duration-200 focus:border-slate-300 placeholder:text-sm placeholder:text-center focus:placeholder:opacity-0  ${
+              className={`text-sm border w-full border-slate-100 pl-3 rounded-md  py-2 transition-all duration-200 focus:border-slate-300 placeholder:text-sm placeholder:text-center focus:placeholder:opacity-0  ${
                 isShown("password") ? "pr-12 border-slate-300" : "pr-3"
               }`}
             />

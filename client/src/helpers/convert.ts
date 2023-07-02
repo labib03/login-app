@@ -2,7 +2,7 @@ import { toast } from "react-hot-toast";
 
 /** image onto base64 */
 export default function convertToBase64(file: File | null) {
-  const typeFile = "image/jpeg";
+  const typeFile = ["image/png", "image/jpeg"];
 
   if (!file) {
     return;
@@ -11,7 +11,7 @@ export default function convertToBase64(file: File | null) {
     const fileReader = new FileReader();
     fileReader.readAsDataURL(file);
 
-    if (file.type === typeFile) {
+    if (typeFile.includes(file.type)) {
       fileReader.onload = () => {
         resolve(fileReader.result);
       };
