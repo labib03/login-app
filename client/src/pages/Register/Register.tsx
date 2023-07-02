@@ -5,6 +5,7 @@ import { useFormik } from "formik";
 import { useState } from "preact/hooks";
 import convertToBase64 from "../../helpers/convert";
 import React from "preact/compat";
+import { registerValidation } from "../../helpers/validate";
 
 const Register = () => {
   const [inputType, setInputType] = useState("password");
@@ -16,7 +17,7 @@ const Register = () => {
       username: "",
       password: "",
     },
-    // validate: usernameValidate,
+    validate: registerValidation,
     validateOnBlur: false,
     validateOnChange: false,
     onSubmit: async (values) => {
