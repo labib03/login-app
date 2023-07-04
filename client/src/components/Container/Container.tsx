@@ -7,14 +7,16 @@ type props = {
 
 function Container({ children }: props) {
   return (
-    <div className="w-screen h-screen flex items-center justify-center">
+    <>
       <Toaster
         position="top-center"
         reverseOrder={true}
         toastOptions={{ duration: 1000 }}
       />
-      {children}
-    </div>
+      <div className="w-screen h-screen flex justify-center relative pt-7">
+        <div>{children}</div>
+      </div>
+    </>
   );
 }
 

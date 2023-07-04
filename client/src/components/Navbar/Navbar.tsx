@@ -3,7 +3,7 @@ import { RouterCollection } from "../../datas/routing";
 
 function Navbar() {
   return (
-    <div className="py-3 bg-slate-50 shadow-sm flex items-center justify-center">
+    <div className="py-3 bg-slate-50 shadow-sm flex items-center justify-center overflow-hidden">
       <ul className="flex gap-3">
         {RouterCollection.map((item) => (
           <li key={item.index}>
