@@ -7,28 +7,32 @@ import {
   RegisterPage,
   ResetPasswordPage,
 } from "./pages";
+import RootLayout from "./components/Layout/RootLayout";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <LoginPage />,
+    element: <RootLayout />,
     errorElement: <ErrorPage />,
-  },
-  {
-    path: "/password",
-    element: <PasswordPage />,
-  },
-  {
-    path: "/recover",
-    element: <RecoverPage />,
-  },
-  {
-    path: "/reset",
-    element: <ResetPasswordPage />,
-  },
-  {
-    path: "/register",
-    element: <RegisterPage />,
+    children: [
+      { path: "/", element: <LoginPage /> },
+      {
+        path: "/password",
+        element: <PasswordPage />,
+      },
+      {
+        path: "/recover",
+        element: <RecoverPage />,
+      },
+      {
+        path: "/reset",
+        element: <ResetPasswordPage />,
+      },
+      {
+        path: "/register",
+        element: <RegisterPage />,
+      },
+    ],
   },
 ]);
 
