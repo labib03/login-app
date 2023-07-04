@@ -1,4 +1,5 @@
 import { RouterProvider, createBrowserRouter } from "react-router-dom";
+import RootLayout from "./components/Layout/RootLayout";
 import {
   ErrorPage,
   LoginPage,
@@ -7,7 +8,6 @@ import {
   RegisterPage,
   ResetPasswordPage,
 } from "./pages";
-import RootLayout from "./components/Layout/RootLayout";
 
 const router = createBrowserRouter([
   {

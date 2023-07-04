@@ -1,2 +1,2 @@
 export { default as Container } from "./Container/Container";
-export { default as Navbar } from "./Navbar/Navbar";
+export { default as RootLayout } from "./Layout/RootLayout";
