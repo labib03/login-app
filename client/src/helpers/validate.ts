@@ -1,6 +1,9 @@
 import toast from "react-hot-toast";
 
 type props = {
+  firstName?: string | undefined;
+  lastName?: string | undefined;
+  phoneNumber?: string | undefined;
   username?: string | undefined;
   email?: string | undefined;
   password?: string | undefined;

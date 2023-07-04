@@ -4,6 +4,7 @@ import {
   ErrorPage,
   LoginPage,
   PasswordPage,
+  ProfilePage,
   RecoverPage,
   RegisterPage,
   ResetPasswordPage,
@@ -31,6 +32,10 @@ const router = createBrowserRouter([
       {
         path: "/register",
         element: <RegisterPage />,
+      },
+      {
+        path: "/profile",
+        element: <ProfilePage />,
       },
     ],
   },
