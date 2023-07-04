@@ -1,8 +1,8 @@
 import { useFormik } from "formik";
+import { useState } from "preact/hooks";
 import { Link } from "react-router-dom";
 import ProfileImage from "../../assets/profile.png";
-import { Container } from "../../components";
-import { useState } from "preact/hooks";
+import { BackButton, Container } from "../../components";
 import { passwordValidate } from "../../helpers/validate";
 
 const Password = () => {
@@ -34,9 +34,7 @@ const Password = () => {
   return (
     <Container>
       <div className="shadow-md rounded-xl px-12 py-14 max-w-sm text-center flex flex-col bg-white">
-        <div className="absolute top-5 left-5">
-          <Link to="/">Back</Link>
-        </div>
+        <BackButton />
 
         <div className="w-full flex flex-col items-center gap-2 mb-8">
           <div>
@@ -87,7 +85,7 @@ const Password = () => {
         <div className="mb-4 mt-5">
           <p className="text-xs">
             Forget your password?{" "}
-            <Link to="/register" className="font-semibold">
+            <Link to="/recover" className="font-semibold">
               Recover Now
             </Link>
           </p>

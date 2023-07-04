@@ -1,13 +1,10 @@
-import { Link } from "react-router-dom";
-import { Container } from "../../components";
+import { BackButton, Container } from "../../components";
 
 const Recover = () => {
   return (
     <Container>
       <div className="shadow-md rounded-xl px-12 py-14 max-w-sm text-center flex flex-col bg-white">
-        <div className="absolute top-5 left-5">
-          <Link to="/">Back</Link>
-        </div>
+        <BackButton />
 
         <div className="w-full flex flex-col items-center gap-2 mb-20">
           <h1 className="text-3xl font-semibold">Recover Password</h1>
