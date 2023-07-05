@@ -1,0 +1,8 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "back end service for login app",
+  "main": "index.js",
+  "author": "raven",
+  "license": "MIT"
+}
