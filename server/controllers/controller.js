@@ -1,3 +1,6 @@
+import bcrypt from "bcrypt";
+import UserModel from "../models/User.model.js";
+
 /** middleware for verify user */
 export async function verifyUser(req, res, next) {
   // try {
@@ -28,7 +31,48 @@ export async function verifyUser(req, res, next) {
 }
 */
 export async function register(req, res) {
-  res.status(201).json("register route");
+  try {
+    const { username, password, profile, email } = req.body;
+    // check the existing user
+    const existUsername = await UserModel.findOne({ username });
+    const existEmail = await UserModel.findOne({ email });
+
+    if (existEmail && existUsername) {
+      return res
+        .status(302)
+        .json({ status: "FAILED", message: "email and username already used" });
+    }
+
+    if (existEmail) {
+      return res
+        .status(302)
+        .json({ status: "FAILED", message: "email already used" });
+    }
+
+    if (existUsername) {
+      return res
+        .status(302)
+        .json({ status: "FAILED", message: "username already used" });
+    }
+
+    // encrypting password
+
+    const encryptedPassword = await bcrypt.hash(password, 10);
+
+    await UserModel.create({
+      username,
+      password: encryptedPassword,
+      profile: profile || "",
+      email,
+    });
+
+    return res.status(201).json({
+      status: "SUCCESS",
+      message: "User Register Successfully",
+    });
+  } catch (error) {
+    return res.status(500).send("something went wrong");
+  }
 }
 
 /** POST: http://localhost:8080/api/login 
