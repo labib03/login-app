@@ -2,6 +2,8 @@ import cors from "cors";
 import express from "express";
 import morgan from "morgan";
 
+import connect from "./databases/connection.js";
+
 const app = express();
 
 /** middlewares */
@@ -20,6 +22,16 @@ app.get("/", (req, res) => {
   });
 });
 
-app.listen(port, () =>
-  console.log(`The server running on: http://localhost:${port}`)
-);
+connect()
+  .then(() => {
+    try {
+      app.listen(port, () =>
+        console.log(`The server running on: http://localhost:${port}`)
+      );
+    } catch (error) {
+      console.log("Cannot connect to the server ...");
+    }
+  })
+  .catch((err) => {
+    console.log("err =>", err);
+  });
