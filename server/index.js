@@ -1,8 +1,7 @@
 import cors from "cors";
 import express from "express";
 import morgan from "morgan";
-
-import connect from "./databases/connection.js";
+import { router } from "./router/route.js";
 
 const app = express();
 
@@ -22,16 +21,23 @@ app.get("/", (req, res) => {
   });
 });
 
-connect()
-  .then(() => {
-    try {
-      app.listen(port, () =>
-        console.log(`The server running on: http://localhost:${port}`)
-      );
-    } catch (error) {
-      console.log("Cannot connect to the server ...");
-    }
-  })
-  .catch((err) => {
-    console.log("err =>", err);
-  });
+// Route
+app.use("/api", router);
+
+// connect()
+//   .then(() => {
+//     try {
+//       app.listen(port, () =>
+//         console.log(`The server running on: http://localhost:${port}`)
+//       );
+//     } catch (error) {
+//       console.log("Cannot connect to the server ...");
+//     }
+//   })
+//   .catch((err) => {
+//     console.log("err =>", err);
+//   });
+
+app.listen(port, () =>
+  console.log(`The server running on: http://localhost:${port}`)
+);
