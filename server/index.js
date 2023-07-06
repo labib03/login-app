@@ -1,7 +1,6 @@
 import cors from "cors";
 import express from "express";
 import morgan from "morgan";
-import ENV from "./config.js";
 import connect from "./databases/connection.js";
 import { router } from "./router/route.js";
 
@@ -11,11 +10,9 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 app.use(morgan("tiny"));
-app.disable("x-powered-by"); // less hackers know about our stack
+app.disable("x-powered-by"); // fewer hackers know about our stack
 
 const PORT = 8080;
-const MONGO_URL = ENV.MONGO_URL;
-
 // HTTPS Request
 app.get("/", (req, res) => {
   res.status(201).json({
