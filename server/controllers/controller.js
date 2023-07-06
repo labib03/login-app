@@ -1,21 +1,24 @@
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
+import ENV from "../config.js";
 import UserModel from "../models/User.model.js";
 
 /** middleware for verify user */
 export async function verifyUser(req, res, next) {
-    // try {
+  try {
+    const { username } = req.method == "GET" ? req.query : req.body;
 
-    //     const { username } = req.method == "GET" ? req.query : req.body;
-
-    //     // check the user existence
-    //     let exist = await UserModel.findOne({ username });
-    //     if(!exist) return res.status(404).send({ error : "Can't find User!"});
-    //     next();
-
-    // } catch (error) {
-    //     return res.status(404).send({ error: "Authentication Error"});
-    // }
-    res.status(201).json("success");
+    // check the user existence
+    let exist = await UserModel.findOne({ username });
+    if (!exist)
+      return res.status(403).json({
+        status: "FAILED",
+        message: `Sorry user with username ${username} not found`,
+      });
+    next();
+  } catch (error) {
+    return res.status(404).send({ error: "Authentication Error" });
+  }
 }
 
 /** POST: http://localhost:8080/api/register
@@ -31,48 +34,47 @@ export async function verifyUser(req, res, next) {
 }
  */
 export async function register(req, res) {
-    try {
-        const {username, password, profile, email} = req.body;
-        // check the existing user
-        const existUsername = await UserModel.findOne({username});
-        const existEmail = await UserModel.findOne({email});
-
-        if (existEmail && existUsername) {
-            return res
-                .status(302)
-                .json({status: "FAILED", message: "email and username already used"});
-        }
-
-        if (existEmail) {
-            return res
-                .status(302)
-                .json({status: "FAILED", message: "email already used"});
-        }
-
-        if (existUsername) {
-            return res
-                .status(302)
-                .json({status: "FAILED", message: "username already used"});
-        }
-
-        // encrypting password
-
-        const encryptedPassword = await bcrypt.hash(password, 10);
-
-        await UserModel.create({
-            username,
-            password: encryptedPassword,
-            profile: profile || "",
-            email,
-        });
-
-        return res.status(201).json({
-            status: "SUCCESS",
-            message: "User Register Successfully",
-        });
-    } catch (error) {
-        return res.status(500).send("something went wrong");
+  try {
+    const { username, password, profile, email } = req.body;
+    // check the existing user
+    const existUsername = await UserModel.findOne({ username });
+    const existEmail = await UserModel.findOne({ email });
+    if (existEmail && existUsername) {
+      return res
+        .status(302)
+        .json({ status: "FAILED", message: "email and username already used" });
     }
+
+    if (existEmail) {
+      return res
+        .status(302)
+        .json({ status: "FAILED", message: "email already used" });
+    }
+
+    if (existUsername) {
+      return res
+        .status(302)
+        .json({ status: "FAILED", message: "username already used" });
+    }
+
+    // encrypting password
+
+    const encryptedPassword = await bcrypt.hash(password, 10);
+
+    await UserModel.create({
+      username,
+      password: encryptedPassword,
+      profile: profile || "",
+      email,
+    });
+
+    return res.status(201).json({
+      status: "SUCCESS",
+      message: "User Register Successfully",
+    });
+  } catch (error) {
+    return res.status(500).send("something went wrong");
+  }
 }
 
 /** POST: http://localhost:8080/api/login
@@ -82,12 +84,47 @@ export async function register(req, res) {
 }
  */
 export async function login(req, res) {
-    res.json("login route");
+  const { username, password } = req.body;
+
+  try {
+    const user = await UserModel.findOne({ username });
+
+    const comparePassword = await bcrypt.compare(password, user.password);
+
+    if (!comparePassword) {
+      return res
+        .status(403)
+        .json({ status: "FAILED", message: "Password not match !" });
+    }
+
+    //   creating jwt token
+    const token = jwt.sign(
+      {
+        userId: user._id,
+        username: user.username,
+      },
+      ENV.JWT_SECRET,
+      { expiresIn: "24h" }
+    );
+
+    return res.status(200).send({
+      status: "SUCCESS",
+      msg: "Login Successful...!",
+      username: user.username,
+      token,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      status: "FAILED",
+      message: "Something went wrong",
+      error,
+    });
+  }
 }
 
 /** GET: http://localhost:8080/api/user/example123 */
 export async function getUser(req, res) {
-    res.json("getUser route");
+  res.json("getUser route");
 }
 
 /** PUT: http://localhost:8080/api/updateuser
@@ -101,27 +138,27 @@ export async function getUser(req, res) {
 }
  */
 export async function updateUser(req, res) {
-    res.json("updateUser route");
+  res.json("updateUser route");
 }
 
 /** GET: http://localhost:8080/api/generateOTP */
 export async function generateOTP(req, res) {
-    res.json("generateOTP route");
+  res.json("generateOTP route");
 }
 
 /** GET: http://localhost:8080/api/verifyOTP */
 export async function verifyOTP(req, res) {
-    res.json("verifyOTP route");
+  res.json("verifyOTP route");
 }
 
 // successfully redirect user when OTP is valid
 /** GET: http://localhost:8080/api/createResetSession */
 export async function createResetSession(req, res) {
-    res.json("createResetSession route");
+  res.json("createResetSession route");
 }
 
 // update the password when we have valid session
 /** PUT: http://localhost:8080/api/resetPassword */
 export async function resetPassword(req, res) {
-    res.json("reset password route");
+  res.json("reset password route");
 }
