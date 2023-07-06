@@ -58,20 +58,27 @@ export async function register(req, res) {
     }
 
     // encrypting password
-
     const encryptedPassword = await bcrypt.hash(password, 10);
 
-    await UserModel.create({
+    UserModel.create({
       username,
       password: encryptedPassword,
       profile: profile || "",
       email,
-    });
-
-    return res.status(201).json({
-      status: "SUCCESS",
-      message: "User Register Successfully",
-    });
+    })
+      .then(() => {
+        return res.status(201).json({
+          status: "SUCCESS",
+          message: "User Register Successfully",
+        });
+      })
+      .catch((err) => {
+        return res.status(404).json({
+          status: "Failed",
+          message: "Register User Failed",
+          error: err,
+        });
+      });
   } catch (error) {
     return res.status(500).send("something went wrong");
   }
@@ -154,7 +161,32 @@ export async function getUser(req, res) {
 }
  */
 export async function updateUser(req, res) {
-  res.json("updateUser route");
+  try {
+    const id = req.query.id;
+
+    if (!id) {
+      return res
+        .status(404)
+        .json({ status: "FAILED", message: "ID not found" });
+    }
+
+    const body = req.body;
+
+    UserModel.updateOne({ _id: id }, body)
+      .then(() => {
+        return res.status(200).json({
+          status: "SUCCESS",
+          message: "Update user success",
+        });
+      })
+      .catch((err) => {
+        return res
+          .status(404)
+          .json({ status: "FAILED", message: "Update failed", err });
+      });
+  } catch (error) {
+    return res.status(401).send({ error });
+  }
 }
 
 /** GET: http://localhost:8080/api/generateOTP */
