@@ -19,3 +19,13 @@ export default async function Auth(req, res, next) {
       .json({ status: "FAILED", message: "Authentication Failed!" });
   }
 }
+
+// store variable in local
+// reference https://expressjs.com/en/api.html#app.locals
+export function localVariables(req, res, next) {
+  req.app.locals = {
+    OTP: null,
+    resetSession: false,
+  };
+  next();
+}

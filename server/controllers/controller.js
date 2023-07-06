@@ -1,5 +1,6 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
+import otpGenerator from "otp-generator";
 import ENV from "../config.js";
 import UserModel from "../models/User.model.js";
 
@@ -7,6 +8,12 @@ import UserModel from "../models/User.model.js";
 export async function verifyUser(req, res, next) {
   try {
     const { username } = req.method == "GET" ? req.query : req.body;
+
+    if (!username) {
+      return res
+        .status(404)
+        .json({ status: "FAILED", message: "You must input username" });
+    }
 
     // check the user existence
     let exist = await UserModel.findOne({ username });
@@ -191,12 +198,29 @@ export async function updateUser(req, res) {
 
 /** GET: http://localhost:8080/api/generateOTP */
 export async function generateOTP(req, res) {
-  res.json("generateOTP route");
+  try {
+    req.app.locals.OTP = await otpGenerator.generate(6, {
+      lowerCaseAlphabets: false,
+      upperCaseAlphabets: false,
+      specialChars: false,
+    });
+    return res.status(201).send({ code: req.app.locals.OTP });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ status: "FAILED", message: "Failed to generate OTP", error });
+  }
 }
 
 /** GET: http://localhost:8080/api/verifyOTP */
 export async function verifyOTP(req, res) {
-  res.json("verifyOTP route");
+  const { code } = req.query;
+  if (parseInt(req.app.locals.OTP) === parseInt(code)) {
+    req.app.locals.OTP = null; // reset the OTP value
+    req.app.locals.resetSession = true; // start session for reset password
+    return res.status(201).send({ msg: "Verify Successsfully!" });
+  }
+  return res.status(400).send({ error: "Invalid OTP" });
 }
 
 // successfully redirect user when OTP is valid
