@@ -94,7 +94,7 @@ export async function login(req, res) {
     if (!comparePassword) {
       return res
         .status(403)
-        .json({ status: "FAILED", message: "Password not match !" });
+        .json({ status: "FAILED", message: "Wrong password !" });
     }
 
     //   creating jwt token
@@ -124,7 +124,23 @@ export async function login(req, res) {
 
 /** GET: http://localhost:8080/api/user/example123 */
 export async function getUser(req, res) {
-  res.json("getUser route");
+  const { username } = req.params;
+
+  try {
+    const user = await UserModel.findOne({ username });
+
+    if (!user) {
+      return res
+        .status(403)
+        .json({ status: "FAILED", message: "Can't Find the User" });
+    }
+
+    /** remove password from user */
+    const { password, ...rest } = Object.assign({}, user.toJSON());
+    return res.status(201).json({ status: "SUCCESS", data: rest });
+  } catch (error) {
+    return res.status(404).send({ error: "Cannot Find User Data" });
+  }
 }
 
 /** PUT: http://localhost:8080/api/updateuser
