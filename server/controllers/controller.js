@@ -162,9 +162,9 @@ export async function getUser(req, res) {
  */
 export async function updateUser(req, res) {
   try {
-    const id = req.query.id;
+    const { userId } = req.userAuth;
 
-    if (!id) {
+    if (!userId) {
       return res
         .status(404)
         .json({ status: "FAILED", message: "ID not found" });
@@ -172,7 +172,7 @@ export async function updateUser(req, res) {
 
     const body = req.body;
 
-    UserModel.updateOne({ _id: id }, body)
+    UserModel.updateOne({ _id: userId }, body)
       .then(() => {
         return res.status(200).json({
           status: "SUCCESS",
