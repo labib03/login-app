@@ -24,20 +24,6 @@ app.get("/", (req, res) => {
 // Route
 app.use("/api", router);
 
-// mongoose
-//   .connect(MONGO_URL)
-//   .then(() => {
-//     // listen app
-//     app.listen(PORT, () => {
-//       console.log(
-//         `connect to databases & listening on http://localhost:${PORT}/`
-//       );
-//     });
-//   })
-//   .catch((err) => {
-//     console.log(err);
-//   });
-
 connect()
   .then(() => {
     try {
@@ -51,7 +37,3 @@ connect()
   .catch((err) => {
     console.log("err =>", err);
   });
-
-// app.listen(port, () =>
-//   console.log(`The server running on: http://localhost:${port}`)
-// );

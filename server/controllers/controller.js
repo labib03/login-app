@@ -2,6 +2,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import otpGenerator from "otp-generator";
 import ENV from "../config.js";
+import { saltRound } from "../helpers/variable.js";
 import UserModel from "../models/User.model.js";
 
 /** middleware for verify user */
@@ -65,7 +66,7 @@ export async function register(req, res) {
     }
 
     // encrypting password
-    const encryptedPassword = await bcrypt.hash(password, 10);
+    const encryptedPassword = await bcrypt.hash(password, saltRound);
 
     UserModel.create({
       username,
@@ -218,7 +219,9 @@ export async function verifyOTP(req, res) {
   if (parseInt(req.app.locals.OTP) === parseInt(code)) {
     req.app.locals.OTP = null; // reset the OTP value
     req.app.locals.resetSession = true; // start session for reset password
-    return res.status(201).send({ msg: "Verify Successsfully!" });
+    return res
+      .status(201)
+      .send({ status: "SUCCESS", message: "Verify Successsfully!" });
   }
   return res.status(400).send({ error: "Invalid OTP" });
 }
@@ -226,11 +229,55 @@ export async function verifyOTP(req, res) {
 // successfully redirect user when OTP is valid
 /** GET: http://localhost:8080/api/createResetSession */
 export async function createResetSession(req, res) {
-  res.json("createResetSession route");
+  if (req.app.locals.resetSession) {
+    return res.status(201).send({ flag: req.app.locals.resetSession });
+  }
+  return res.status(440).send({ error: "Session expired!" });
 }
 
 // update the password when we have valid session
 /** PUT: http://localhost:8080/api/resetPassword */
 export async function resetPassword(req, res) {
-  res.json("reset password route");
+  try {
+    if (!req.app.locals.resetSession)
+      return res
+        .status(440)
+        .send({ status: "FAILED", message: "Session expired!" });
+
+    const { id, password } = req.body;
+
+    const user = await UserModel.findOne({ _id: id });
+
+    if (!user) {
+      return res.status(404).send({
+        status: "FAILED",
+        message: `User not Found`,
+      });
+    }
+
+    const encryptedPassword = await bcrypt.hash(password, saltRound);
+    const newPassword = {
+      password: encryptedPassword,
+    };
+
+    UserModel.updateOne({ username: user.username }, newPassword)
+      .then(() => {
+        req.app.locals.resetSession = false; // reset session
+        return res.status(201).send({
+          status: "SUCCESS",
+          message: "Your password has been successfully changed",
+        });
+      })
+      .catch((err) => {
+        return res.status(201).send({
+          status: "FAILED",
+          message: "Your password has failed to change",
+          error: err,
+        });
+      });
+  } catch (error) {
+    return res
+      .status(401)
+      .send({ status: "FAILED", message: "Something went wrong", error });
+  }
 }
