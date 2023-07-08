@@ -2,7 +2,7 @@ import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import otpGenerator from "otp-generator";
 import ENV from "../config.js";
-import { saltRound } from "../helpers/variable.js";
+import { jwt_exp_time, saltRound } from "../helpers/variable.js";
 import UserModel from "../models/User.model.js";
 
 /** middleware for verify user */
@@ -25,7 +25,9 @@ export async function verifyUser(req, res, next) {
       });
     next();
   } catch (error) {
-    return res.status(404).send({ error: "Authentication Error" });
+    return res
+      .status(404)
+      .json({ status: "FAILED", error: "Authentication Error" });
   }
 }
 
@@ -88,7 +90,9 @@ export async function register(req, res) {
         });
       });
   } catch (error) {
-    return res.status(500).send("something went wrong");
+    return res
+      .status(500)
+      .json({ status: "FAILED", message: "something went wrong" });
   }
 }
 
@@ -119,12 +123,12 @@ export async function login(req, res) {
         username: user.username,
       },
       ENV.JWT_SECRET,
-      { expiresIn: "24h" }
+      { expiresIn: jwt_exp_time }
     );
 
-    return res.status(200).send({
+    return res.status(200).json({
       status: "SUCCESS",
-      msg: "Login Successful...!",
+      message: "Login Successful...!",
       username: user.username,
       token,
     });
@@ -154,7 +158,9 @@ export async function getUser(req, res) {
     const { password, ...rest } = Object.assign({}, user.toJSON());
     return res.status(201).json({ status: "SUCCESS", data: rest });
   } catch (error) {
-    return res.status(404).send({ error: "Cannot Find User Data" });
+    return res
+      .status(404)
+      .json({ status: "FAILED", message: "Cannot Find User Data", error });
   }
 }
 
@@ -193,19 +199,23 @@ export async function updateUser(req, res) {
           .json({ status: "FAILED", message: "Update failed", err });
       });
   } catch (error) {
-    return res.status(401).send({ error });
+    return res
+      .status(401)
+      .json({ status: "FAILED", message: "Something wen wrong", error });
   }
 }
 
 /** GET: http://localhost:8080/api/generateOTP */
 export async function generateOTP(req, res) {
+  const { username } = req.query;
   try {
     req.app.locals.OTP = await otpGenerator.generate(6, {
       lowerCaseAlphabets: false,
       upperCaseAlphabets: false,
       specialChars: false,
     });
-    return res.status(201).send({ code: req.app.locals.OTP });
+    req.app.locals.username = username;
+    return res.status(201).json({ code: req.app.locals.OTP });
   } catch (error) {
     return res
       .status(500)
@@ -215,41 +225,56 @@ export async function generateOTP(req, res) {
 
 /** GET: http://localhost:8080/api/verifyOTP */
 export async function verifyOTP(req, res) {
-  const { code } = req.query;
+  const { code, username } = req.query;
+  const { username: localUsername } = req.app.locals;
+
+  if (username !== localUsername) {
+    return res
+      .status(403)
+      .json({ status: "FAILED", message: "Username not match" });
+  }
+
   if (parseInt(req.app.locals.OTP) === parseInt(code)) {
     req.app.locals.OTP = null; // reset the OTP value
+    req.app.locals.username = null; // reset the username value on local variable
     req.app.locals.resetSession = true; // start session for reset password
-    return res
-      .status(201)
-      .send({ status: "SUCCESS", message: "Verify Successsfully!" });
+    return res.status(201).json({
+      status: "SUCCESS",
+      message: "Verify Successsfully!",
+    });
   }
-  return res.status(400).send({ error: "Invalid OTP" });
+  return res.status(400).json({ status: "FAILED", message: "Invalid OTP" });
 }
 
 // successfully redirect user when OTP is valid
 /** GET: http://localhost:8080/api/createResetSession */
 export async function createResetSession(req, res) {
   if (req.app.locals.resetSession) {
-    return res.status(201).send({ flag: req.app.locals.resetSession });
+    return res.status(201).json({ flag: req.app.locals.resetSession });
   }
-  return res.status(440).send({ error: "Session expired!" });
+  return res
+    .status(440)
+    .json({ status: "FAILED", message: "Session expired!" });
 }
 
 // update the password when we have valid session
 /** PUT: http://localhost:8080/api/resetPassword */
 export async function resetPassword(req, res) {
+  // local variable
+  const { resetSession } = req.app.locals;
+
   try {
-    if (!req.app.locals.resetSession)
+    if (!resetSession)
       return res
         .status(440)
-        .send({ status: "FAILED", message: "Session expired!" });
+        .json({ status: "FAILED", message: "Session expired!" });
 
     const { id, password } = req.body;
 
     const user = await UserModel.findOne({ _id: id });
 
     if (!user) {
-      return res.status(404).send({
+      return res.status(404).json({
         status: "FAILED",
         message: `User not Found`,
       });
@@ -263,13 +288,13 @@ export async function resetPassword(req, res) {
     UserModel.updateOne({ username: user.username }, newPassword)
       .then(() => {
         req.app.locals.resetSession = false; // reset session
-        return res.status(201).send({
+        return res.status(201).json({
           status: "SUCCESS",
           message: "Your password has been successfully changed",
         });
       })
       .catch((err) => {
-        return res.status(201).send({
+        return res.status(201).json({
           status: "FAILED",
           message: "Your password has failed to change",
           error: err,
@@ -278,6 +303,6 @@ export async function resetPassword(req, res) {
   } catch (error) {
     return res
       .status(401)
-      .send({ status: "FAILED", message: "Something went wrong", error });
+      .json({ status: "FAILED", message: "Something went wrong", error });
   }
 }

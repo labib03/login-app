@@ -27,6 +27,8 @@ app.use("/api", router);
 connect()
   .then(() => {
     try {
+      // connectToMongo();
+
       app.listen(PORT, () =>
         console.log(`The server running on: http://localhost:${PORT}`)
       );
