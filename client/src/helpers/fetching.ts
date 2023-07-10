@@ -31,3 +31,15 @@ export async function registerUser(credentials) {
         return Promise.reject({error})
     }
 }
+
+/** login function */
+export async function verifyPassword({username, password}) {
+    try {
+        if (username) {
+            const {data} = await api.post('/api/login', {username, password})
+            return Promise.resolve({data});
+        }
+    } catch (error) {
+        return Promise.reject({error: "Password doesn't Match...!"})
+    }
+}
