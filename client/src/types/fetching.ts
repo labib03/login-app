@@ -9,10 +9,10 @@ type DataResponse = {
 export interface ResponseFetchType {
     status: string
     message: string
-    username: string
-    token: string
+    username?: string
+    token?: string
     data?: DataResponse
     code: string
-    email: string
+    email?: string
 }
 

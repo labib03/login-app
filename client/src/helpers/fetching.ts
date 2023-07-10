@@ -98,3 +98,13 @@ export async function verifyOTP({username, code}) {
         return Promise.reject(error);
     }
 }
+
+/** reset password */
+export async function resetPassword({username, password}) {
+    try {
+        const {data, status}: ResponseProps = await api.put('/api/resetPassword', {username, password});
+        return Promise.resolve({data, status})
+    } catch (error) {
+        return Promise.reject({error})
+    }
+}
