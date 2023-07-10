@@ -1,4 +1,4 @@
-import axios, {AxiosInstance} from "axios";
+import axios, {AxiosInstance, AxiosResponse} from "axios";
 import {ResponseFetchType} from "../types/fetching.ts";
 import {BASE_URL} from "../datas/variables.ts";
 
@@ -41,5 +41,18 @@ export async function verifyPassword({username, password}) {
         }
     } catch (error) {
         return Promise.reject({error: "Password doesn't Match...!"})
+    }
+}
+
+/** update user profile function */
+export async function updateUser(response) {
+    try {
+
+        const token = await localStorage.getItem('token');
+        const data: AxiosResponse<ResponseFetchType> = await api.put('/api/updateuser', response, {headers: {"Authorization": `Bearer ${token}`}});
+
+        return Promise.resolve({data})
+    } catch (error) {
+        return Promise.reject({error: "Couldn't Update Profile...!"})
     }
 }
