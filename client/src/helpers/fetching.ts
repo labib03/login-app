@@ -88,3 +88,13 @@ export async function generateOTP(username) {
         return Promise.reject({error});
     }
 }
+
+/** verify OTP */
+export async function verifyOTP({username, code}) {
+    try {
+        const {data, status}: ResponseProps = await api.get('/api/verifyOTP', {params: {username, code}})
+        return {data, status}
+    } catch (error) {
+        return Promise.reject(error);
+    }
+}
