@@ -1,13 +1,14 @@
 import { Router } from "express";
 /** import all controllers */
 import * as controller from "../controllers/controller.js";
+import { mailController } from "../controllers/mailer.js";
 import Auth, { localVariables } from "../middlewares/auth.js";
 
 const router = Router();
 
 /** POST Methods */
 router.route("/register").post(controller.register); // register user
-// router.route('/registerMail').post(registerMail); // send the email
+router.route("/registerMail").post(mailController); // send the email
 router
   .route("/authenticate")
   .post(controller.verifyUser, (req, res) => res.end()); // authenticate user
