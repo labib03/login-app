@@ -23,9 +23,12 @@ const api: AxiosInstance = axios.create({
 /** authenticate function */
 export async function authenticate(username: string) {
   try {
-    return await axios.post("/api/authenticate", { username });
+    const response: ResponseProps = await axios.post("/api/authenticate", {
+      username,
+    });
+    return response;
   } catch (error) {
-    return { error: "Username doesn't exist...!" };
+    return { error: "Username doesn't exist...!", data: { status: 500 } };
   }
 }
 

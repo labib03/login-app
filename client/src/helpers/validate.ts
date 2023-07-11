@@ -1,4 +1,5 @@
 import toast from "react-hot-toast";
+import { authenticate } from "./fetch.ts";
 
 type props = {
   firstName?: string | undefined;
@@ -16,6 +17,17 @@ type props = {
 /** validate login page username */
 export async function usernameValidate(values: props) {
   const errors = usernameVerify({}, values);
+
+  if (values.username) {
+    // check user exist or not
+    const { data } = await authenticate(values.username);
+
+    const { status } = data;
+
+    if (status !== 200) {
+      errors.exist = toast.error("User does not exist...!");
+    }
+  }
 
   return errors;
 }
@@ -71,7 +83,7 @@ function passwordVerify(errors: props = {}, values: props) {
     errors.password = toast.error("Invalid Password...!");
   } else if (values.password.length < 4) {
     errors.password = toast.error(
-      "Password must be more than 4 characters long"
+      "Password must be more than 4 characters long",
     );
   } else if (!specialChars.test(values.password)) {
     errors.password = toast.error("Password must have special character");
