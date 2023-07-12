@@ -15,7 +15,7 @@ type UpdateUserProps = {
   email?: string;
 };
 
-const api: AxiosInstance = axios.create({
+export const api: AxiosInstance = axios.create({
   baseURL: BASE_URL,
   timeout: 10000,
 });

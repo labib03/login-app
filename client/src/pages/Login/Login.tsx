@@ -9,10 +9,8 @@ type LoginFormikValues = {
   username: string;
 };
 const Login = () => {
-  const { setUsername, auth } = useAuthStore();
+  const { setUsername } = useAuthStore();
   const navigate = useNavigate();
-
-  console.log("auth", auth);
 
   const formik = useFormik({
     initialValues: {
@@ -23,7 +21,7 @@ const Login = () => {
     validateOnChange: false,
     onSubmit: async (values: LoginFormikValues) => {
       setUsername(values.username);
-      // navigate("/password");
+      navigate("/password");
     },
   });
 

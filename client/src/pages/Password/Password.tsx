@@ -4,9 +4,16 @@ import { Link } from "react-router-dom";
 import ProfileImage from "../../assets/profile.png";
 import { BackButton, Container } from "../../components";
 import { passwordValidate } from "../../helpers/validate";
+import useFetch from "../../hooks/useFetch.ts";
+import { useAuthStore } from "../../store/store.ts";
 
 const Password = () => {
   const [inputType, setInputType] = useState("password");
+
+  const { auth } = useAuthStore();
+  const { data } = useFetch(`user/${auth.username}`);
+
+  const userData = data.apiData?.data;
 
   const formik = useFormik({
     initialValues: {
@@ -34,13 +41,12 @@ const Password = () => {
 
   return (
     <Container>
+      <BackButton />
       <div className="shadow-md rounded-xl px-12 py-14 max-w-sm text-center flex flex-col bg-white">
-        <BackButton />
-
         <div className="w-full flex flex-col items-center gap-2 mb-8">
           <div>
             <h1 className="text-3xl font-semibold">Welcome Back</h1>
-            <h1 className="text-2xl font-medium">Username</h1>
+            <h1 className="text-2xl font-medium">{userData?.username}</h1>
           </div>
           <p className="text-gray-400 text-xs max-w-[16rem]">
             And now please enter your password to get in
@@ -49,7 +55,7 @@ const Password = () => {
 
         <div className="w-full text-center flex items-center justify-center mb-8">
           <img
-            src={ProfileImage}
+            src={userData?.profile || ProfileImage}
             className="w-2/4 rounded-full border-2 border-white shadow-md"
           />
         </div>
@@ -59,7 +65,7 @@ const Password = () => {
             {...formik.getFieldProps("password")}
             type={inputType}
             placeholder="Password"
-            className={`border w-full border-slate-100 pl-3 rounded-md  py-2 transition-all duration-200 focus:border-slate-300 placeholder:text-sm placeholder:text-center focus:placeholder:opacity-0  ${
+            className={`border w-full border-slate-100 pl-3 rounded-md text-sm py-2 transition-all duration-200 focus:border-slate-300 placeholder:text-sm placeholder:text-center focus:placeholder:opacity-0  ${
               isHasValue ? "pr-12 border-slate-300" : "pr-3"
             }`}
           />
