@@ -21,8 +21,7 @@ export async function usernameValidate(values: props) {
 
   if (values.username) {
     try {
-      const response = await authenticate(values.username);
-      return response;
+      await authenticate(values.username);
     } catch (error) {
       if (isAxiosError(error)) {
         errors.exist = toast.error(error?.response?.data.message);

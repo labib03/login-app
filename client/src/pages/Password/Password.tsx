@@ -7,6 +7,7 @@ import { passwordValidate } from "../../helpers/validate";
 
 const Password = () => {
   const [inputType, setInputType] = useState("password");
+
   const formik = useFormik({
     initialValues: {
       password: "",

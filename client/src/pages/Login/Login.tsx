@@ -1,6 +1,6 @@
 import { Container } from "../../components";
 import ProfileImage from "../../assets/profile.png";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import { usernameValidate } from "../../helpers/validate";
 import { useAuthStore } from "../../store/store.ts";
@@ -9,7 +9,10 @@ type LoginFormikValues = {
   username: string;
 };
 const Login = () => {
-  const { setUsername } = useAuthStore();
+  const { setUsername, auth } = useAuthStore();
+  const navigate = useNavigate();
+
+  console.log("auth", auth);
 
   const formik = useFormik({
     initialValues: {
@@ -20,6 +23,7 @@ const Login = () => {
     validateOnChange: false,
     onSubmit: async (values: LoginFormikValues) => {
       setUsername(values.username);
+      // navigate("/password");
     },
   });
 
