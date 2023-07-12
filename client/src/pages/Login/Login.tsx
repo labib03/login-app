@@ -64,6 +64,7 @@ const Login = () => {
         </div>
 
         <button
+          type="button"
           className="bg-emerald-400 rounded-md py-2 text-sm mt-2 transition-all duration-150 hover:bg-emerald-500"
           onClick={(e) => {
             e.preventDefault();

@@ -11,7 +11,9 @@ router.route("/register").post(controller.register); // register user
 router.route("/registerMail").post(mailController); // send the email
 router
   .route("/authenticate")
-  .post(controller.verifyUser, (req, res) => res.end()); // authenticate user
+  .post(controller.verifyUser, (req, res) =>
+    res.status(200).json({ status: "SUCCESS", message: "User Verified" }),
+  ); // authenticate user
 router.route("/login").post(controller.verifyUser, controller.login); // login in app
 
 // /** GET Methods */

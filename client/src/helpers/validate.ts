@@ -1,5 +1,6 @@
 import toast from "react-hot-toast";
 import { authenticate } from "./fetch.ts";
+import { isAxiosError } from "axios";
 
 type props = {
   firstName?: string | undefined;
@@ -19,14 +20,15 @@ export async function usernameValidate(values: props) {
   const errors = usernameVerify({}, values);
 
   if (values.username) {
-    // check user exist or not
-    const { data } = await authenticate(values.username);
-
-    const { status } = data;
-
-    if (status !== 200) {
-      errors.exist = toast.error("User does not exist...!");
+    try {
+      const response = await authenticate(values.username);
+      return response;
+    } catch (error) {
+      if (isAxiosError(error)) {
+        errors.exist = toast.error(error?.response?.data.message);
+      }
     }
+    // check user exist or not
   }
 
   return errors;
