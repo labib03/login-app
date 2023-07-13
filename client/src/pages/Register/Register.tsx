@@ -6,6 +6,12 @@ import { useState } from "preact/hooks";
 import convertToBase64 from "../../helpers/convert";
 import React from "preact/compat";
 import { registerValidation } from "../../helpers/validate";
+import { REGISTER_REQUIREMENT } from "../../datas/general.ts";
+import { registerUser } from "../../helpers/fetch.ts";
+import { AxiosError, AxiosResponse } from "axios";
+import { IRegisterResponse } from "../../types/fetching.ts";
+import toast from "react-hot-toast";
+import { STATUS_SUCCESS } from "../../datas/variables.ts";
 
 const Register = () => {
   const [inputType, setInputType] = useState("password");
@@ -16,13 +22,28 @@ const Register = () => {
       email: "",
       username: "",
       password: "",
+      profile: "",
     },
     validate: registerValidation,
     validateOnBlur: false,
     validateOnChange: false,
     onSubmit: async (values) => {
       values = await Object.assign(values, { profile: file || "" });
-      console.log(values);
+
+      try {
+        const response: AxiosResponse<IRegisterResponse> = await registerUser(
+          values,
+        );
+
+        const { status, message } = response.data;
+        if (status === STATUS_SUCCESS) {
+          toast.success(message);
+        }
+      } catch (err) {
+        const errResponse = err as AxiosError<IRegisterResponse>;
+
+        toast.error(errResponse?.response?.data?.message);
+      }
     },
   });
 
@@ -146,6 +167,13 @@ const Register = () => {
               </button>
             )}
           </div>
+          <ul className="text-left list-disc list-inside decoration-green-300">
+            {REGISTER_REQUIREMENT.password.map((item, index) => (
+              <li key={index} className="text-[12px]">
+                {item}
+              </li>
+            ))}
+          </ul>
         </div>
 
         <button

@@ -11,6 +11,7 @@ type props = {
   password?: string | undefined;
   confirm_password?: string | undefined;
   exist?: string | undefined;
+  profile?: string | undefined;
 };
 
 // ========== VALIDATOR ========== //
@@ -52,7 +53,12 @@ export async function resetPasswordValidation(values: props) {
 }
 
 /** validate register form */
-export async function registerValidation(values: props) {
+export async function registerValidation(values: {
+  email: string;
+  username: string;
+  password: string;
+  profile: string;
+}) {
   const errors = usernameVerify({}, values);
   passwordVerify(errors, values);
   emailVerify(errors, values);

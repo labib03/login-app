@@ -9,7 +9,7 @@ function Container({ children }: props) {
   return (
     <>
       <Toaster
-        position="top-center"
+        position="top-right"
         reverseOrder={true}
         toastOptions={{ duration: 1000 }}
       />
