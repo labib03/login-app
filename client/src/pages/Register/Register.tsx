@@ -42,7 +42,11 @@ const Register = () => {
       } catch (err) {
         const errResponse = err as AxiosError<IRegisterResponse>;
 
-        toast.error(errResponse?.response?.data?.message);
+        const messageLength = errResponse?.response?.data.message.length || 40;
+
+        toast.error(errResponse?.response?.data?.message, {
+          duration: messageLength * 60,
+        });
       }
     },
   });

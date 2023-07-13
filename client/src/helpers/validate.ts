@@ -25,7 +25,10 @@ export async function usernameValidate(values: props) {
       await authenticate(values.username);
     } catch (error) {
       if (isAxiosError(error)) {
-        errors.exist = toast.error(error?.response?.data.message);
+        const messageLength = error?.response?.data.message.length;
+        errors.exist = toast.error(error?.response?.data.message, {
+          duration: messageLength * 60,
+        });
       }
     }
     // check user exist or not
