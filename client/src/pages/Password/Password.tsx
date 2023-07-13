@@ -6,14 +6,22 @@ import { BackButton, Container } from "../../components";
 import { passwordValidate } from "../../helpers/validate";
 import useFetch from "../../hooks/useFetch.ts";
 import { useAuthStore } from "../../store/store.ts";
+import toast from "react-hot-toast";
 
 const Password = () => {
   const [inputType, setInputType] = useState("password");
 
   const { auth } = useAuthStore();
-  const { data } = useFetch(`user/${auth.username}`);
+  const responseUseFetch = useFetch(`/user/${auth.username}`);
+
+  const { data } = responseUseFetch;
 
   const userData = data.apiData?.data;
+  const errorServerResponse = data.serverError;
+
+  if (errorServerResponse) {
+    toast.error(errorServerResponse.message);
+  }
 
   const formik = useFormik({
     initialValues: {

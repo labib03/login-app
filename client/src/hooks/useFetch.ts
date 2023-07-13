@@ -35,7 +35,7 @@ export default function useFetch(query: string) {
         setData((prev) => ({
           ...prev,
           isLoading: false,
-          serverError: errorResponse.response,
+          serverError: errorResponse,
         }));
       }
     };
