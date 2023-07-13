@@ -1,4 +1,4 @@
-import { Container } from "../../components";
+import { Container, Loader } from "../../components";
 import ProfileImage from "../../assets/profile.png";
 import { Link } from "react-router-dom";
 import { useFormik } from "formik";
@@ -16,6 +16,7 @@ import { STATUS_SUCCESS } from "../../datas/variables.ts";
 const Register = () => {
   const [inputType, setInputType] = useState("password");
   const [file, setFile] = useState<File | any>();
+  const [loading, setLoading] = useState(false);
 
   const formik = useFormik({
     initialValues: {
@@ -29,7 +30,7 @@ const Register = () => {
     validateOnChange: false,
     onSubmit: async (values) => {
       values = await Object.assign(values, { profile: file || "" });
-
+      setLoading(true);
       try {
         const response: AxiosResponse<IRegisterResponse> = await registerUser(
           values,
@@ -47,6 +48,8 @@ const Register = () => {
         toast.error(errResponse?.response?.data?.message, {
           duration: messageLength * 60,
         });
+      } finally {
+        setLoading(false);
       }
     },
   });
@@ -76,6 +79,19 @@ const Register = () => {
     setFile(base64);
   };
 
+  const renderButtonText = () => {
+    if (loading) {
+      return (
+        <div className="flex gap-1 items-center justify-center">
+          <Loader />
+          <h1>Loading ...</h1>
+        </div>
+      );
+    } else {
+      return <>Register</>;
+    }
+  };
+
   return (
     <Container>
       <div className="shadow-md rounded-xl px-12 py-14 max-w-sm text-center flex flex-col bg-white">
@@ -92,6 +108,7 @@ const Register = () => {
             className="flex items-center justify-center hover:cursor-pointer"
           >
             <img
+              alt="profile image"
               src={file || ProfileImage}
               className="w-2/4 overflow-hidden rounded-full border-2 border-white shadow-md"
             />
@@ -182,13 +199,14 @@ const Register = () => {
 
         <button
           type="submit"
-          className="bg-emerald-400 rounded-md py-2 text-sm mt-3 transition-all duration-150 hover:bg-emerald-500"
+          className="bg-emerald-400 rounded-md py-2 text-sm mt-3 transition-all duration-150 hover:bg-emerald-500 disabled:bg-gray-300 disabled:cursor-not-allowed"
           onClick={(e) => {
             e.preventDefault();
             formik.handleSubmit();
           }}
+          disabled={loading}
         >
-          Register
+          {renderButtonText()}
         </button>
 
         <div className="mb-4 mt-5">
