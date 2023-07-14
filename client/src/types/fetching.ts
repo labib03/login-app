@@ -24,3 +24,15 @@ export interface IRegisterResponse {
   status: string;
   message: string;
 }
+
+export interface ILoginSuccessResponse {
+  status: string;
+  message: string;
+  username: string;
+  token: string;
+}
+
+export interface ILoginErrorResponse {
+  status: string;
+  message: string;
+}

@@ -1,18 +1,25 @@
 import { useFormik } from "formik";
 import { useState } from "preact/hooks";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import ProfileImage from "../../assets/profile.png";
-import { BackButton, Container } from "../../components";
-import { passwordValidate } from "../../helpers/validate";
+import { BackButton, Container, Loader } from "../../components";
 import useFetch from "../../hooks/useFetch.ts";
 import { useAuthStore } from "../../store/store.ts";
 import toast from "react-hot-toast";
+import { verifyPassword } from "../../helpers/fetch.ts";
+import { AxiosError, AxiosResponse } from "axios";
+import {
+  ILoginErrorResponse,
+  ILoginSuccessResponse,
+} from "../../types/fetching.ts";
 
 const Password = () => {
   const [inputType, setInputType] = useState("password");
+  const [loading, setLoading] = useState(false);
 
   const { auth } = useAuthStore();
   const responseUseFetch = useFetch(`/user/${auth.username}`);
+  const navigate = useNavigate();
 
   const { data } = responseUseFetch;
 
@@ -27,11 +34,31 @@ const Password = () => {
     initialValues: {
       password: "",
     },
-    validate: passwordValidate,
+    // validate: passwordValidate,
     validateOnBlur: false,
     validateOnChange: false,
     onSubmit: async (values) => {
-      console.log(values);
+      setLoading(true);
+      try {
+        const response: AxiosResponse<ILoginSuccessResponse> =
+          await verifyPassword({
+            username: auth.username,
+            password: values.password,
+          });
+
+        const { token } = response.data;
+        await localStorage.setItem("token", token);
+        navigate("/profile");
+      } catch (err) {
+        const errResponse = err as AxiosError<ILoginErrorResponse>;
+        const message = errResponse?.response?.data.message;
+        const messageLength = message?.length || 40;
+        toast.error(message, {
+          duration: messageLength * 60,
+        });
+      } finally {
+        setLoading(false);
+      }
     },
   });
 
@@ -44,6 +71,19 @@ const Password = () => {
       setInputType("text");
     } else {
       setInputType("password");
+    }
+  };
+
+  const renderButtonText = () => {
+    if (loading) {
+      return (
+        <div className="flex gap-1 items-center justify-center">
+          <Loader />
+          <h1>Loading ...</h1>
+        </div>
+      );
+    } else {
+      return <>Sign In</>;
     }
   };
 
@@ -88,13 +128,14 @@ const Password = () => {
         </div>
 
         <button
-          className="bg-emerald-400 rounded-md py-2 text-sm mt-2 transition-all duration-150 hover:bg-emerald-500"
+          disabled={loading}
+          className="bg-emerald-400 rounded-md py-2 text-sm mt-2 transition-all duration-150 hover:bg-emerald-500 disabled:bg-gray-300 disabled:cursor-not-allowed"
           onClick={(e) => {
             e.preventDefault();
             formik.handleSubmit();
           }}
         >
-          Sign In
+          {renderButtonText()}
         </button>
 
         <div className="mb-4 mt-5">

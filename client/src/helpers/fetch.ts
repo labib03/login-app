@@ -76,14 +76,7 @@ export async function verifyPassword({
   username: string;
   password: string;
 }) {
-  try {
-    if (username) {
-      const { data } = await api.post("/api/login", { username, password });
-      return Promise.resolve({ data });
-    }
-  } catch (error) {
-    return Promise.reject({ error: "Password doesn't Match...!" });
-  }
+  return await api.post("/api/login", { username, password });
 }
 
 /** update user profile function */
