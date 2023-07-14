@@ -3,7 +3,7 @@ import React from "preact/compat";
 import { useState } from "preact/hooks";
 import { Link } from "react-router-dom";
 import ProfileImage from "../../assets/profile.png";
-import { Container } from "../../components";
+import { Container, Loader } from "../../components";
 import convertToBase64 from "../../helpers/convert";
 import { updateUserValidation } from "../../helpers/validate.ts";
 import { updateUser } from "../../helpers/fetch.ts";
@@ -14,8 +14,15 @@ import {
 } from "../../types/fetching.ts";
 import toast from "react-hot-toast";
 
+const initialStateFieldError = {
+  userName: false,
+  email: false,
+};
+
 const Profile = () => {
   const [file, setFile] = useState<File | any>();
+  const [fieldError, setFieldError] = useState(initialStateFieldError);
+  const [loading, setLoading] = useState(false);
 
   const formik = useFormik({
     initialValues: {
@@ -30,6 +37,8 @@ const Profile = () => {
     validateOnChange: false,
     onSubmit: async (values) => {
       console.log(values);
+      setLoading(true);
+      setFieldError(initialStateFieldError);
 
       try {
         const response: AxiosResponse<IGeneralResponse> = await updateUser(
@@ -46,9 +55,17 @@ const Profile = () => {
         const message = errResponse?.response?.data.message;
         const duration = message ? message.length * 60 : 2000;
 
+        const fieldError = errResponse?.response?.data?.error?.field;
+        setFieldError((val) => ({
+          ...val,
+          [fieldError.join()]: true,
+        }));
+
         toast.error(message, {
           duration,
         });
+      } finally {
+        setLoading(false);
       }
     },
   });
@@ -68,6 +85,19 @@ const Profile = () => {
     const file = e.currentTarget.files ? e.currentTarget.files[0] : null;
     const base64 = await convertToBase64(file);
     setFile(base64);
+  };
+
+  const renderButtonText = () => {
+    if (loading) {
+      return (
+        <div className="flex gap-1 items-center justify-center">
+          <Loader />
+          <h1>Loading ...</h1>
+        </div>
+      );
+    } else {
+      return <>Update</>;
+    }
   };
 
   return (
@@ -178,59 +208,79 @@ const Profile = () => {
               )}
             </div>
 
-            <div className="relative w-full rounded-md overflow-hidden">
+            <div className="w-full rounded-md overflow-hidden">
+              <div className="relative">
+                <input
+                  {...formik.getFieldProps("userName")}
+                  type="text"
+                  placeholder="User Name"
+                  className={`text-sm border w-full border-slate-100 pl-3 rounded-md  py-2 transition-all duration-200 placeholder:text-sm placeholder:text-center focus:border-slate-300 focus:placeholder:opacity-0  ${
+                    isShown("userName") ? "pr-12 border-slate-300" : "pr-3"
+                  } ${
+                    fieldError.userName
+                      ? "bg-red-100 placeholder:text-stone-800"
+                      : ""
+                  }`}
+                />
+                {isShown("userName") && (
+                  <button
+                    className="h-full px-1.5 text-xs absolute right-0 top-0 bg-stone-50 border-t border-r border-b border-slate-300 rounded-e-md transition-all duration-200"
+                    onClick={() => {
+                      fieldResetHandler("userName");
+                    }}
+                  >
+                    clear
+                  </button>
+                )}
+              </div>
+              {fieldError.userName && (
+                <small className="w-full flex items-center justify-start text-xs text-red-500">
+                  username already used
+                </small>
+              )}
+            </div>
+          </div>
+
+          <div className="w-full flex flex-col rounded-md overflow-hidden">
+            <div className="relative">
               <input
-                {...formik.getFieldProps("userName")}
+                {...formik.getFieldProps("email")}
                 type="text"
-                placeholder="User Name"
-                className={`text-sm border w-full border-slate-100 pl-3 rounded-md  py-2 transition-all duration-200 focus:border-slate-300 placeholder:text-sm placeholder:text-center focus:placeholder:opacity-0  ${
-                  isShown("userName") ? "pr-12 border-slate-300" : "pr-3"
-                }`}
+                placeholder="Email Address"
+                className={`text-sm border w-full border-slate-100 pl-3 rounded-md  py-2 transition-all duration-200 focus:border-slate-300 placeholder:text-sm placeholder:text-center focus:placeholder:opacity-0
+                ${isShown("email") ? "pr-12 border-slate-300" : "pr-3"}
+                ${fieldError.email ? "bg-red-200" : ""}
+                `}
               />
-              {isShown("userName") && (
+              {isShown("email") && (
                 <button
                   className="h-full px-1.5 text-xs absolute right-0 top-0 bg-stone-50 border-t border-r border-b border-slate-300 rounded-e-md transition-all duration-200"
                   onClick={() => {
-                    fieldResetHandler("userName");
+                    fieldResetHandler("email");
                   }}
                 >
                   clear
                 </button>
               )}
             </div>
-          </div>
-
-          <div className="relative w-full flex flex-col rounded-md overflow-hidden">
-            <input
-              {...formik.getFieldProps("email")}
-              type="text"
-              placeholder="Email Address"
-              className={`text-sm border w-full border-slate-100 pl-3 rounded-md  py-2 transition-all duration-200 focus:border-slate-300 placeholder:text-sm placeholder:text-center focus:placeholder:opacity-0  ${
-                isShown("email") ? "pr-12 border-slate-300" : "pr-3"
-              }`}
-            />
-            {isShown("email") && (
-              <button
-                className="h-full px-1.5 text-xs absolute right-0 top-0 bg-stone-50 border-t border-r border-b border-slate-300 rounded-e-md transition-all duration-200"
-                onClick={() => {
-                  fieldResetHandler("email");
-                }}
-              >
-                clear
-              </button>
+            {fieldError.email && (
+              <small className="w-full flex items-center justify-start text-xs text-red-500">
+                email already used
+              </small>
             )}
           </div>
         </div>
 
         <button
+          disabled={loading}
           type="submit"
-          className="bg-emerald-400 rounded-md py-2 text-sm mt-3 transition-all duration-150 hover:bg-emerald-500"
+          className="bg-emerald-400 rounded-md py-2 text-sm mt-3 transition-all duration-150 hover:bg-emerald-500 disabled:bg-gray-300 disabled:cursor-not-allowed"
           onClick={(e) => {
             e.preventDefault();
             formik.handleSubmit();
           }}
         >
-          Update
+          {renderButtonText()}
         </button>
 
         <div className="mb-4 mt-5">

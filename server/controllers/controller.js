@@ -198,9 +198,13 @@ export async function updateUser(req, res) {
         });
       })
       .catch((err) => {
-        return res
-          .status(404)
-          .json({ status: "FAILED", message: "Update failed", error: err });
+        const error_key = Object.keys(err.keyPattern);
+        const messageError = `${error_key.join().toLowerCase()} already used`;
+        return res.status(404).json({
+          status: "FAILED",
+          message: messageError || "Update failed",
+          error: { field: error_key },
+        });
       });
   } catch (error) {
     return res
