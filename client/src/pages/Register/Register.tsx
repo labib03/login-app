@@ -9,7 +9,7 @@ import { registerValidation } from "../../helpers/validate";
 import { REGISTER_REQUIREMENT } from "../../datas/general.ts";
 import { registerUser } from "../../helpers/fetch.ts";
 import { AxiosError, AxiosResponse } from "axios";
-import { IRegisterResponse } from "../../types/fetching.ts";
+import { IGeneralResponse } from "../../types/fetching.ts";
 import toast from "react-hot-toast";
 import { STATUS_SUCCESS } from "../../datas/variables.ts";
 
@@ -21,7 +21,7 @@ const Register = () => {
   const formik = useFormik({
     initialValues: {
       email: "",
-      username: "",
+      userName: "",
       password: "",
       profile: "",
     },
@@ -32,7 +32,7 @@ const Register = () => {
       values = await Object.assign(values, { profile: file || "" });
       setLoading(true);
       try {
-        const response: AxiosResponse<IRegisterResponse> = await registerUser(
+        const response: AxiosResponse<IGeneralResponse> = await registerUser(
           values,
         );
 
@@ -41,7 +41,7 @@ const Register = () => {
           toast.success(message);
         }
       } catch (err) {
-        const errResponse = err as AxiosError<IRegisterResponse>;
+        const errResponse = err as AxiosError<IGeneralResponse>;
 
         const messageLength = errResponse?.response?.data.message.length || 40;
 
@@ -151,18 +151,18 @@ const Register = () => {
 
           <div className="relative w-full flex flex-col rounded-md overflow-hidden">
             <input
-              {...formik.getFieldProps("username")}
+              {...formik.getFieldProps("userName")}
               type="text"
               placeholder="Username"
               className={`text-sm border w-full border-slate-100 pl-3 rounded-md  py-2 transition-all duration-200 focus:border-slate-300 placeholder:text-sm placeholder:text-center focus:placeholder:opacity-0  ${
-                isShown("username") ? "pr-12 border-slate-300" : "pr-3"
+                isShown("userName") ? "pr-12 border-slate-300" : "pr-3"
               }`}
             />
-            {isShown("username") && (
+            {isShown("userName") && (
               <button
                 className="h-full px-1.5 text-xs absolute right-0 top-0 bg-stone-50 border-t border-r border-b border-slate-300 rounded-e-md transition-all duration-200"
                 onClick={() => {
-                  fieldResetHandler("username");
+                  fieldResetHandler("userName");
                 }}
               >
                 clear

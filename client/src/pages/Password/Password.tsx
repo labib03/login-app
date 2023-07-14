@@ -18,7 +18,7 @@ const Password = () => {
   const [loading, setLoading] = useState(false);
 
   const { auth } = useAuthStore();
-  const responseUseFetch = useFetch(`/user/${auth.username}`);
+  const responseUseFetch = useFetch(`/user/${auth.userName}`);
   const navigate = useNavigate();
 
   const { data } = responseUseFetch;
@@ -42,7 +42,7 @@ const Password = () => {
       try {
         const response: AxiosResponse<ILoginSuccessResponse> =
           await verifyPassword({
-            username: auth.username,
+            userName: auth.userName,
             password: values.password,
           });
 

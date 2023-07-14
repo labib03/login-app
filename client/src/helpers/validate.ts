@@ -1,12 +1,13 @@
 import toast from "react-hot-toast";
 import { authenticate } from "./fetch.ts";
 import { isAxiosError } from "axios";
+import { UpdateUserProps } from "../types/fetching.ts";
 
 type props = {
   firstName?: string | undefined;
   lastName?: string | undefined;
   phoneNumber?: string | undefined;
-  username?: string | undefined;
+  userName?: string | undefined;
   email?: string | undefined;
   password?: string | undefined;
   confirm_password?: string | undefined;
@@ -20,14 +21,14 @@ type props = {
 export async function usernameValidate(values: props) {
   const errors = usernameVerify({}, values);
 
-  if (values.username) {
+  if (values.userName) {
     try {
-      await authenticate(values.username);
+      await authenticate(values.userName);
     } catch (error) {
       if (isAxiosError(error)) {
         const messageLength = error?.response?.data.message.length;
         errors.exist = toast.error(error?.response?.data.message, {
-          duration: messageLength * 60,
+          duration: messageLength * 100,
         });
       }
     }
@@ -39,9 +40,7 @@ export async function usernameValidate(values: props) {
 
 /** validate password */
 export async function passwordValidate(values: props) {
-  const errors = passwordVerify({}, values);
-
-  return errors;
+  return passwordVerify({}, values);
 }
 
 /** validate reset password */
@@ -58,7 +57,7 @@ export async function resetPasswordValidation(values: props) {
 /** validate register form */
 export async function registerValidation(values: {
   email: string;
-  username: string;
+  userName: string;
   password: string;
   profile: string;
 }) {
@@ -69,14 +68,18 @@ export async function registerValidation(values: {
   return errors;
 }
 
+export function updateUserValidation(payload: UpdateUserProps) {
+  return emailVerify({}, payload);
+}
+
 // ========== FUNCTION ========== //
 
 /** validate username */
 function usernameVerify(error: props = {}, values: props) {
-  if (!values?.username) {
-    error.username = toast.error("Username Required...!");
-  } else if (values.username.includes(" ")) {
-    error.username = toast.error("Invalid Username...!");
+  if (!values?.userName) {
+    error.userName = toast.error("Username Required...!");
+  } else if (values.userName.includes(" ")) {
+    error.userName = toast.error("Invalid Username...!");
   }
 
   return error;

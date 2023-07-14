@@ -1,5 +1,5 @@
 type AuthStoreType = {
-  username: string;
+  userName: string;
   active: boolean;
 };
 

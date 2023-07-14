@@ -5,28 +5,25 @@ import { useFormik } from "formik";
 import { usernameValidate } from "../../helpers/validate";
 import { useAuthStore } from "../../store/store.ts";
 
-type LoginFormikValues = {
-  username: string;
-};
 const Login = () => {
   const { setUsername } = useAuthStore();
   const navigate = useNavigate();
 
   const formik = useFormik({
     initialValues: {
-      username: "",
+      userName: "",
     },
     validate: usernameValidate,
     validateOnBlur: false,
     validateOnChange: false,
-    onSubmit: async (values: LoginFormikValues) => {
-      setUsername(values.username);
+    onSubmit: async (values: { userName: string }) => {
+      setUsername(values.userName);
       navigate("/password");
     },
   });
 
-  const isHasValue = formik?.values?.username?.length
-    ? formik?.values?.username?.length > 0
+  const isHasValue = formik?.values?.userName?.length
+    ? formik?.values?.userName?.length > 0
     : false;
 
   return (
@@ -48,7 +45,7 @@ const Login = () => {
 
         <div className="relative w-full flex flex-col rounded-md overflow-hidden">
           <input
-            {...formik.getFieldProps("username")}
+            {...formik.getFieldProps("userName")}
             type="text"
             placeholder="Username"
             className={`border w-full border-slate-100 pl-3 rounded-md  py-2 transition-all duration-200 focus:border-slate-300 placeholder:text-sm placeholder:text-center focus:placeholder:opacity-0  ${

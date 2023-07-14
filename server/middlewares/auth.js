@@ -24,7 +24,7 @@ export default async function Auth(req, res, next) {
 // reference https://expressjs.com/en/api.html#app.locals
 export function localVariables(req, res, next) {
   req.app.locals = {
-    username: null,
+    userName: null,
     OTP: null,
     resetSession: false,
   };

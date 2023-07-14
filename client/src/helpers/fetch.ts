@@ -1,18 +1,10 @@
-import axios, { AxiosInstance, AxiosResponse } from "axios";
-import { ResponseFetchType } from "../types/fetching.ts";
+import axios, { AxiosInstance } from "axios";
+import { ResponseFetchType, UpdateUserProps } from "../types/fetching.ts";
 import { BASE_URL } from "../datas/variables.ts";
 
 type ResponseProps = {
   data: ResponseFetchType;
   status?: number;
-};
-
-type UpdateUserProps = {
-  firstName?: string;
-  lastName?: string;
-  phoneNumber?: string;
-  username?: string;
-  email?: string;
 };
 
 export const api: AxiosInstance = axios.create({
@@ -21,9 +13,9 @@ export const api: AxiosInstance = axios.create({
 });
 
 /** authenticate function */
-export async function authenticate(username: string) {
+export async function authenticate(userName: string) {
   return await api.post("/api/authenticate", {
-    username,
+    userName,
   });
 }
 
@@ -39,7 +31,7 @@ export async function getUser({ username }: { username: string }) {
 
 /** register user function */
 export async function registerUser(credentials: {
-  username: string;
+  userName: string;
   email: string;
   profile: string;
 }) {
@@ -70,29 +62,21 @@ export async function registerUser(credentials: {
 
 /** login function */
 export async function verifyPassword({
-  username,
+  userName,
   password,
 }: {
-  username: string;
+  userName: string;
   password: string;
 }) {
-  return await api.post("/api/login", { username, password });
+  return await api.post("/api/login", { userName, password });
 }
 
 /** update user profile function */
 export async function updateUser(response: UpdateUserProps) {
-  try {
-    const token = await localStorage.getItem("token");
-    const data: AxiosResponse<ResponseFetchType> = await api.put(
-      "/api/updateUser",
-      response,
-      { headers: { Authorization: `Bearer ${token}` } },
-    );
-
-    return Promise.resolve({ data });
-  } catch (error) {
-    return Promise.reject({ error: "Couldn't Update Profile...!" });
-  }
+  const token = await localStorage.getItem("token");
+  return await api.put("/api/updateUser", response, {
+    headers: { Authorization: `Bearer ${token}` },
+  });
 }
 
 /** generate OTP */

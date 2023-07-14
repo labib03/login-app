@@ -8,20 +8,20 @@ import UserModel from "../models/User.model.js";
 /** middleware for verify user */
 export async function verifyUser(req, res, next) {
   try {
-    const { username } = req.method === "GET" ? req.query : req.body;
+    const { userName } = req.method === "GET" ? req.query : req.body;
 
-    if (!username) {
+    if (!userName) {
       return res
         .status(404)
         .json({ status: "FAILED", message: "You must input username" });
     }
 
     // check the user existence
-    let exist = await UserModel.findOne({ username });
+    let exist = await UserModel.findOne({ userName });
     if (!exist)
       return res.status(403).json({
         status: "FAILED",
-        message: `Sorry user with username ${username} not found`,
+        message: `Sorry user with username ${userName} is not found`,
       });
     next();
   } catch (error) {
@@ -45,9 +45,9 @@ export async function verifyUser(req, res, next) {
  */
 export async function register(req, res) {
   try {
-    const { username, password, profile, email } = req.body;
+    const { userName, password, profile, email } = req.body;
     // check the existing user
-    const existUsername = await UserModel.findOne({ username });
+    const existUsername = await UserModel.findOne({ userName });
     const existEmail = await UserModel.findOne({ email });
     if (existEmail && existUsername) {
       return res
@@ -71,7 +71,7 @@ export async function register(req, res) {
     const encryptedPassword = await bcrypt.hash(password, saltRound);
 
     UserModel.create({
-      username,
+      userName,
       password: encryptedPassword,
       profile: profile || "",
       email,
@@ -103,10 +103,10 @@ export async function register(req, res) {
 }
  */
 export async function login(req, res) {
-  const { username, password } = req.body;
+  const { userName, password } = req.body;
 
   try {
-    const user = await UserModel.findOne({ username });
+    const user = await UserModel.findOne({ userName });
 
     const comparePassword = await bcrypt.compare(password, user.password);
 
@@ -120,7 +120,7 @@ export async function login(req, res) {
     const token = jwt.sign(
       {
         userId: user._id,
-        username: user.username,
+        userName: user.userName,
       },
       ENV.JWT_SECRET,
       { expiresIn: jwt_exp_time },
@@ -129,7 +129,7 @@ export async function login(req, res) {
     return res.status(200).json({
       status: "SUCCESS",
       message: "Login Successful...!",
-      username: user.username,
+      userName: user.userName,
       token,
     });
   } catch (error) {
@@ -143,10 +143,12 @@ export async function login(req, res) {
 
 /** GET: http://localhost:8080/api/user/example123 */
 export async function getUser(req, res) {
-  const { username } = req.params;
+  const { userName } = req.params;
+
+  console.log("userName", userName);
 
   try {
-    const user = await UserModel.findOne({ username });
+    const user = await UserModel.findOne({ userName });
 
     if (!user) {
       return res
@@ -198,7 +200,7 @@ export async function updateUser(req, res) {
       .catch((err) => {
         return res
           .status(404)
-          .json({ status: "FAILED", message: "Update failed", err });
+          .json({ status: "FAILED", message: "Update failed", error: err });
       });
   } catch (error) {
     return res
@@ -209,14 +211,14 @@ export async function updateUser(req, res) {
 
 /** GET: http://localhost:8080/api/generateOTP */
 export async function generateOTP(req, res) {
-  const { username } = req.query;
+  const { userName } = req.query;
   try {
     req.app.locals.OTP = await otpGenerator.generate(6, {
       lowerCaseAlphabets: false,
       upperCaseAlphabets: false,
       specialChars: false,
     });
-    req.app.locals.username = username;
+    req.app.locals.userName = userName;
     return res.status(201).json({ code: req.app.locals.OTP });
   } catch (error) {
     return res
@@ -227,10 +229,10 @@ export async function generateOTP(req, res) {
 
 /** GET: http://localhost:8080/api/verifyOTP */
 export async function verifyOTP(req, res) {
-  const { code, username } = req.query;
-  const { username: localUsername } = req.app.locals;
+  const { code, userName } = req.query;
+  const { userName: localUsername } = req.app.locals;
 
-  if (username !== localUsername) {
+  if (userName !== localUsername) {
     return res
       .status(403)
       .json({ status: "FAILED", message: "Username not match" });
@@ -238,7 +240,7 @@ export async function verifyOTP(req, res) {
 
   if (parseInt(req.app.locals.OTP) === parseInt(code)) {
     req.app.locals.OTP = null; // reset the OTP value
-    req.app.locals.username = null; // reset the username value on local variable
+    req.app.locals.userName = null; // reset the username value on local variable
     req.app.locals.resetSession = true; // start session for reset password
     return res.status(201).json({
       status: "SUCCESS",
@@ -287,7 +289,7 @@ export async function resetPassword(req, res) {
       password: encryptedPassword,
     };
 
-    UserModel.updateOne({ username: user.username }, newPassword)
+    UserModel.updateOne({ userName: user.userName }, newPassword)
       .then(() => {
         req.app.locals.resetSession = false; // reset session
         return res.status(201).json({

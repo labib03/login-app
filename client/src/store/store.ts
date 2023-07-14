@@ -4,10 +4,10 @@ import { AuthStoreInterface } from "../types/zustand.ts";
 export const useAuthStore = create<AuthStoreInterface>((set) => {
   return {
     auth: {
-      username: "",
+      userName: "",
       active: false,
     },
     setUsername: (name) =>
-      set((state) => ({ auth: { ...state.auth, username: name } })),
+      set((state) => ({ auth: { ...state.auth, userName: name } })),
   };
 });

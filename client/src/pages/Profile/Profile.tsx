@@ -5,6 +5,14 @@ import { Link } from "react-router-dom";
 import ProfileImage from "../../assets/profile.png";
 import { Container } from "../../components";
 import convertToBase64 from "../../helpers/convert";
+import { updateUserValidation } from "../../helpers/validate.ts";
+import { updateUser } from "../../helpers/fetch.ts";
+import { AxiosError, AxiosResponse } from "axios";
+import {
+  IGeneralResponse,
+  IUpdateUserErrorResponse,
+} from "../../types/fetching.ts";
+import toast from "react-hot-toast";
 
 const Profile = () => {
   const [file, setFile] = useState<File | any>();
@@ -17,11 +25,31 @@ const Profile = () => {
       userName: "",
       phoneNumber: "",
     },
-    // validate: registerValidation,
+    validate: updateUserValidation,
     validateOnBlur: false,
     validateOnChange: false,
     onSubmit: async (values) => {
       console.log(values);
+
+      try {
+        const response: AxiosResponse<IGeneralResponse> = await updateUser(
+          values,
+        );
+        const { message } = response.data;
+        const duration = message.length * 60;
+
+        toast.success(message, {
+          duration,
+        });
+      } catch (err) {
+        const errResponse = err as AxiosError<IUpdateUserErrorResponse>;
+        const message = errResponse?.response?.data.message;
+        const duration = message ? message.length * 60 : 2000;
+
+        toast.error(message, {
+          duration,
+        });
+      }
     },
   });
 
@@ -134,8 +162,8 @@ const Profile = () => {
                   const inputElement = event.target as HTMLInputElement;
                   const handler = formik.getFieldHelpers("phoneNumber");
 
-                  const value = inputElement.value.slice(0, 12);
-                  handler.setValue(value);
+                  const valueToString = inputElement.value.slice(0, 12);
+                  handler.setValue(valueToString);
                 }}
               />
               {isShown("phoneNumber") && (
