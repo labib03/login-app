@@ -1,7 +1,7 @@
 import { useFormik } from "formik";
 import React from "preact/compat";
 import { useState } from "preact/hooks";
-import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import ProfileImage from "../../assets/profile.png";
 import { Container, Loader } from "../../components";
 import convertToBase64 from "../../helpers/convert";
@@ -23,6 +23,8 @@ const Profile = () => {
   const [file, setFile] = useState<File | any>();
   const [fieldError, setFieldError] = useState(initialStateFieldError);
   const [loading, setLoading] = useState(false);
+
+  const navigate = useNavigate();
 
   const formik = useFormik({
     initialValues: {
@@ -85,6 +87,12 @@ const Profile = () => {
     const file = e.currentTarget.files ? e.currentTarget.files[0] : null;
     const base64 = await convertToBase64(file);
     setFile(base64);
+  };
+
+  const logoutHandler = async () => {
+    await localStorage.removeItem("token");
+
+    navigate("/");
   };
 
   const renderButtonText = () => {
@@ -286,9 +294,12 @@ const Profile = () => {
         <div className="mb-4 mt-5">
           <p className="text-xs">
             Want to leave ?{" "}
-            <Link to="/" className="font-semibold text-red-500">
+            <button
+              className="text-red-500 font-semibold"
+              onClick={logoutHandler}
+            >
               Logout
-            </Link>
+            </button>
           </p>
         </div>
       </div>
