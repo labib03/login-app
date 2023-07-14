@@ -8,7 +8,7 @@ import UserModel from "../models/User.model.js";
 /** middleware for verify user */
 export async function verifyUser(req, res, next) {
   try {
-    const { username } = req.method == "GET" ? req.query : req.body;
+    const { username } = req.method === "GET" ? req.query : req.body;
 
     if (!username) {
       return res
@@ -123,7 +123,7 @@ export async function login(req, res) {
         username: user.username,
       },
       ENV.JWT_SECRET,
-      { expiresIn: jwt_exp_time }
+      { expiresIn: jwt_exp_time },
     );
 
     return res.status(200).json({
@@ -164,7 +164,7 @@ export async function getUser(req, res) {
   }
 }
 
-/** PUT: http://localhost:8080/api/updateuser
+/** PUT: http://localhost:8080/api/updateUser
  * @param: {
   "header" : "<token>"
 }
@@ -178,10 +178,12 @@ export async function updateUser(req, res) {
   try {
     const { userId } = req.userAuth;
 
-    if (!userId) {
+    const user = await UserModel.findOne({ _id: userId });
+
+    if (!user) {
       return res
         .status(404)
-        .json({ status: "FAILED", message: "ID not found" });
+        .json({ status: "FAILED", message: "User not found" });
     }
 
     const body = req.body;
@@ -201,7 +203,7 @@ export async function updateUser(req, res) {
   } catch (error) {
     return res
       .status(401)
-      .json({ status: "FAILED", message: "Something wen wrong", error });
+      .json({ status: "FAILED", message: "Something went wrong", error });
   }
 }
 
