@@ -1,13 +1,15 @@
-import { Container } from "../../components";
+import { Container, FormButton } from "../../components";
 import ProfileImage from "../../assets/profile.png";
 import { Link, useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
 import { usernameValidate } from "../../helpers/validate";
 import { useAuthStore } from "../../store/store.ts";
+import { useState } from "preact/hooks";
 
 const Login = () => {
   const { setUsername } = useAuthStore();
   const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
 
   const formik = useFormik({
     initialValues: {
@@ -17,14 +19,24 @@ const Login = () => {
     validateOnBlur: false,
     validateOnChange: false,
     onSubmit: async (values: { userName: string }) => {
-      setUsername(values.userName);
-      navigate("/password");
+      setLoading(true);
+
+      setTimeout(() => {
+        setUsername(values.userName);
+        navigate("/password");
+        setLoading(false);
+      }, 1000);
     },
   });
 
   const isHasValue = formik?.values?.userName?.length
     ? formik?.values?.userName?.length > 0
     : false;
+
+  const buttonHandler = (e: Event) => {
+    e.preventDefault();
+    formik.handleSubmit();
+  };
 
   return (
     <Container>
@@ -62,16 +74,7 @@ const Login = () => {
           )}
         </div>
 
-        <button
-          type="button"
-          className="bg-emerald-400 rounded-md py-2 text-sm mt-2 transition-all duration-150 hover:bg-emerald-500"
-          onClick={(e) => {
-            e.preventDefault();
-            formik.handleSubmit();
-          }}
-        >
-          Continue
-        </button>
+        <FormButton onClick={buttonHandler} text="Continue" loading={loading} />
 
         <div className="mb-4 mt-5">
           <p className="text-xs">

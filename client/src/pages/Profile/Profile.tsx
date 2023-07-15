@@ -3,7 +3,7 @@ import React from "preact/compat";
 import { useState } from "preact/hooks";
 import { useNavigate } from "react-router-dom";
 import ProfileImage from "../../assets/profile.png";
-import { Container, Loader } from "../../components";
+import { Container, FormButton } from "../../components";
 import convertToBase64 from "../../helpers/convert";
 import { updateUser } from "../../helpers/fetch.ts";
 import { AxiosError, AxiosResponse } from "axios";
@@ -13,6 +13,8 @@ import {
 } from "../../types/fetching.ts";
 import toast from "react-hot-toast";
 import { updateUserValidation } from "../../helpers/validate.ts";
+// @ts-ignore
+import { JSXInternal } from "preact/src/jsx";
 
 const initialStateFieldError = {
   userName: false,
@@ -95,17 +97,11 @@ const Profile = () => {
     navigate("/");
   };
 
-  const renderButtonText = () => {
-    if (loading) {
-      return (
-        <div className="flex gap-1 items-center justify-center">
-          <Loader />
-          <h1>Loading ...</h1>
-        </div>
-      );
-    } else {
-      return <>Update</>;
-    }
+  const buttonHandler = (
+    e: JSXInternal.TargetedMouseEvent<HTMLButtonElement>,
+  ) => {
+    e.preventDefault();
+    formik.handleSubmit();
   };
 
   return (
@@ -124,6 +120,7 @@ const Profile = () => {
             className="flex items-center justify-center hover:cursor-pointer"
           >
             <img
+              alt="profile image"
               src={file || ProfileImage}
               className="w-2/5 overflow-hidden rounded-full border-2 border-white shadow-md"
             />
@@ -279,17 +276,7 @@ const Profile = () => {
           </div>
         </div>
 
-        <button
-          disabled={loading}
-          type="submit"
-          className="bg-emerald-400 rounded-md py-2 text-sm mt-3 transition-all duration-150 hover:bg-emerald-500 disabled:bg-gray-300 disabled:cursor-not-allowed"
-          onClick={(e) => {
-            e.preventDefault();
-            formik.handleSubmit();
-          }}
-        >
-          {renderButtonText()}
-        </button>
+        <FormButton onClick={buttonHandler} text={"Update"} loading={loading} />
 
         <div className="mb-4 mt-5">
           <p className="text-xs">

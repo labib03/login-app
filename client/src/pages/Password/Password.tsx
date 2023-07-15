@@ -2,7 +2,7 @@ import { useFormik } from "formik";
 import { useState } from "preact/hooks";
 import { Link, useNavigate } from "react-router-dom";
 import ProfileImage from "../../assets/profile.png";
-import { BackButton, Container, Loader } from "../../components";
+import { BackButton, Container, FormButton } from "../../components";
 import useFetch from "../../hooks/useFetch.ts";
 import { useAuthStore } from "../../store/store.ts";
 import toast from "react-hot-toast";
@@ -12,6 +12,8 @@ import {
   ILoginErrorResponse,
   ILoginSuccessResponse,
 } from "../../types/fetching.ts";
+// @ts-ignore
+import { JSXInternal } from "preact/src/jsx";
 
 const Password = () => {
   const [inputType, setInputType] = useState("password");
@@ -74,17 +76,11 @@ const Password = () => {
     }
   };
 
-  const renderButtonText = () => {
-    if (loading) {
-      return (
-        <div className="flex gap-1 items-center justify-center">
-          <Loader />
-          <h1>Loading ...</h1>
-        </div>
-      );
-    } else {
-      return <>Sign In</>;
-    }
+  const buttonHandler = (
+    e: JSXInternal.TargetedMouseEvent<HTMLButtonElement>,
+  ) => {
+    e.preventDefault();
+    formik.handleSubmit();
   };
 
   return (
@@ -103,6 +99,7 @@ const Password = () => {
 
         <div className="w-full text-center flex items-center justify-center mb-8">
           <img
+            alt="profile image"
             src={userData?.profile || ProfileImage}
             className="w-2/4 rounded-full border-2 border-white shadow-md"
           />
@@ -127,16 +124,7 @@ const Password = () => {
           )}
         </div>
 
-        <button
-          disabled={loading}
-          className="bg-emerald-400 rounded-md py-2 text-sm mt-2 transition-all duration-150 hover:bg-emerald-500 disabled:bg-gray-300 disabled:cursor-not-allowed"
-          onClick={(e) => {
-            e.preventDefault();
-            formik.handleSubmit();
-          }}
-        >
-          {renderButtonText()}
-        </button>
+        <FormButton onClick={buttonHandler} text="Sign In" loading={loading} />
 
         <div className="mb-4 mt-5">
           <p className="text-xs">

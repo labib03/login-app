@@ -19,7 +19,7 @@ type props = {
 
 /** validate login page username */
 export async function usernameValidate(values: props) {
-  const errors = usernameVerify({}, values);
+  const errors = usernameVerify(values);
 
   if (values.userName) {
     try {
@@ -27,7 +27,7 @@ export async function usernameValidate(values: props) {
     } catch (error) {
       if (isAxiosError(error)) {
         const messageLength = error?.response?.data.message.length;
-        errors.exist = toast.error(error?.response?.data.message, {
+        return toast.error(error?.response?.data.message, {
           duration: messageLength * 100,
         });
       }
@@ -40,15 +40,15 @@ export async function usernameValidate(values: props) {
 
 /** validate password */
 export async function passwordValidate(values: props) {
-  return passwordVerify({}, values);
+  return passwordVerify(values);
 }
 
 /** validate reset password */
 export async function resetPasswordValidation(values: props) {
-  const errors = passwordVerify({}, values);
+  const errors = passwordVerify(values);
 
   if (values.password !== values.confirm_password) {
-    errors.exist = toast.error("Password not match...!");
+    return toast.error("Password not match...!");
   }
 
   return errors;
@@ -61,61 +61,85 @@ export async function registerValidation(values: {
   password: string;
   profile: string;
 }) {
-  const errors = usernameVerify({}, values);
-  passwordVerify(errors, values);
-  emailVerify(errors, values);
+  if (!values.email) {
+    return toast.error("Email is required");
+  }
+  emailVerify(values);
 
-  return errors;
+  if (!values.userName) {
+    return toast.error("Username is required");
+  }
+  usernameVerify(values);
+
+  if (!values.password) {
+    return toast.error("Password is required");
+  }
+  passwordVerify(values);
 }
 
 export function updateUserValidation(payload: UpdateUserProps) {
-  const errors = usernameVerify({}, payload);
-  emailVerify(errors, payload);
-  return errors;
+  if (!payload.userName) {
+    return toast.error("Username is required");
+  }
+  usernameVerify(payload);
+
+  if (!payload.email) {
+    return toast.error("email is required");
+  }
+  emailVerify(payload);
+
+  // console.log("errors email", errorsEmail);
+  // if (!payload.userName) {
+  //   toast.error("Username is required");
+  //   return {
+  //     userName: "Username is required",
+  //     email: "",
+  //   };
+  // }
+  //
+  // if (!payload.email) {
+  //   toast.error("email is required");
+  //   return {
+  //     email: "email is required",
+  //     userName: "",
+  //   };
+  // }
 }
 
 // ========== FUNCTION ========== //
 
 /** validate username */
-function usernameVerify(error: props = {}, values: props) {
+function usernameVerify(values: props) {
   if (!values?.userName) {
-    error.userName = toast.error("Username Required...!");
-  } else if (values.userName.includes(" ")) {
-    error.userName = toast.error("Invalid Username...!");
+    return toast.error("Username Required...!");
+  } else if (values?.userName?.includes(" ")) {
+    return toast.error("Invalid Username...!");
   }
-
-  return error;
 }
 
 /** validate password */
-function passwordVerify(errors: props = {}, values: props) {
+function passwordVerify(values: props) {
   /* eslint-disable no-useless-escape */
   const specialChars = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
 
   if (!values.password) {
-    errors.password = toast.error("Password Required...!");
+    return toast.error("Password Required...!");
   } else if (values.password.includes(" ")) {
-    errors.password = toast.error("Invalid Password...!");
+    return toast.error("Invalid Password...!");
   } else if (values.password.length < 4) {
-    errors.password = toast.error(
-      "Password must be more than 4 characters long",
-    );
+    return toast.error("Password must be more than 4 characters long");
   } else if (!specialChars.test(values.password)) {
-    errors.password = toast.error("Password must have special character");
+    return toast.error("Password must have special character");
   }
-
-  return errors;
 }
 
 /** validate email */
-function emailVerify(error: props = {}, values: props) {
+function emailVerify(values: props) {
   if (!values.email) {
-    error.email = toast.error("Email Required...!");
+    return toast.error("Email Required...!");
   } else if (values.email.includes(" ")) {
-    error.email = toast.error("Wrong Email...!");
+    return toast.error("Wrong Email...!");
   } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
-    error.email = toast.error("Invalid email address...!");
+    return toast.error("Invalid email address...!");
   }
-
-  return error;
 }
