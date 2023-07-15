@@ -74,6 +74,8 @@ const Profile = () => {
     },
   });
 
+  console.log("formik error", formik.errors);
+
   const isShown = (type: string) => {
     const field = formik.getFieldProps(type);
     return field.value ? String(field.value).length > 0 : false;

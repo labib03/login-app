@@ -35,7 +35,7 @@ const Register = () => {
     },
     validate: registerValidation,
     validateOnBlur: false,
-    validateOnChange: false,
+    validateOnChange: true,
     onSubmit: async (values) => {
       values = await Object.assign(values, { profile: file || "" });
       setLoading(true);
@@ -107,6 +107,8 @@ const Register = () => {
       return <>Register</>;
     }
   };
+
+  console.log("formik error", formik.errors);
 
   return (
     <Container>
