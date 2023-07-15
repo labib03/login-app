@@ -1,14 +1,15 @@
 import { Outlet } from "react-router-dom";
-import Navbar from "../Navbar/Navbar";
+import { AuthProvider } from "../../hooks/useAuth.tsx";
 
 function RootLayout() {
   return (
     <>
-      <Navbar />
-
-      <div>
-        <Outlet />
-      </div>
+      {/*<Navbar />*/}
+      <AuthProvider>
+        <div>
+          <Outlet />
+        </div>
+      </AuthProvider>
     </>
   );
 }

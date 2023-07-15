@@ -69,7 +69,9 @@ export async function registerValidation(values: {
 }
 
 export function updateUserValidation(payload: UpdateUserProps) {
-  return emailVerify({}, payload);
+  const errors = usernameVerify({}, payload);
+  emailVerify(errors, payload);
+  return errors;
 }
 
 // ========== FUNCTION ========== //

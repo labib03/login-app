@@ -5,7 +5,6 @@ import { useNavigate } from "react-router-dom";
 import ProfileImage from "../../assets/profile.png";
 import { Container, Loader } from "../../components";
 import convertToBase64 from "../../helpers/convert";
-import { updateUserValidation } from "../../helpers/validate.ts";
 import { updateUser } from "../../helpers/fetch.ts";
 import { AxiosError, AxiosResponse } from "axios";
 import {
@@ -13,6 +12,7 @@ import {
   IUpdateUserErrorResponse,
 } from "../../types/fetching.ts";
 import toast from "react-hot-toast";
+import { updateUserValidation } from "../../helpers/validate.ts";
 
 const initialStateFieldError = {
   userName: false,
@@ -34,11 +34,11 @@ const Profile = () => {
       userName: "",
       phoneNumber: "",
     },
+    enableReinitialize: true,
     validate: updateUserValidation,
     validateOnBlur: false,
     validateOnChange: false,
     onSubmit: async (values) => {
-      console.log(values);
       setLoading(true);
       setFieldError(initialStateFieldError);
 
