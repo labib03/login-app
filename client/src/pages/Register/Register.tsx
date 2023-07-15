@@ -5,16 +5,16 @@ import { useFormik } from "formik";
 import { useState } from "preact/hooks";
 import convertToBase64 from "../../helpers/convert";
 import React from "preact/compat";
-import { registerValidation } from "../../helpers/validate";
-import { REGISTER_REQUIREMENT } from "../../datas/general.ts";
-import { registerUser } from "../../helpers/fetch.ts";
+import { registerValidation } from "@/helpers/validate.ts";
+import { REGISTER_REQUIREMENT } from "@/datas/general.ts";
+import { registerUser } from "@/helpers/fetch.ts";
 import { AxiosError, AxiosResponse } from "axios";
 import {
   IGeneralResponse,
   IRegisterUserErrorResponse,
-} from "../../types/fetching.ts";
+} from "@/types/fetching.ts";
 import toast from "react-hot-toast";
-import { STATUS_SUCCESS } from "../../datas/variables.ts";
+import { STATUS_SUCCESS } from "@/datas/variables.ts";
 
 const initialStateFieldError = {
   userName: false,
@@ -35,7 +35,7 @@ const Register = () => {
     },
     validate: registerValidation,
     validateOnBlur: false,
-    validateOnChange: true,
+    validateOnChange: false,
     onSubmit: async (values) => {
       values = await Object.assign(values, { profile: file || "" });
       setLoading(true);
@@ -107,8 +107,6 @@ const Register = () => {
       return <>Register</>;
     }
   };
-
-  console.log("formik error", formik.errors);
 
   return (
     <Container>

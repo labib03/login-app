@@ -63,11 +63,15 @@ export async function registerValidation(values: {
   const userName = usernameVerify(values);
   const password = passwordVerify(values);
 
-  return {
-    email,
-    userName,
-    password,
-  };
+  if (email || userName || password) {
+    return {
+      email,
+      userName,
+      password,
+    };
+  }
+
+  return;
 }
 
 export function updateUserValidation(payload: UpdateUserProps) {

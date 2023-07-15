@@ -2,8 +2,8 @@ import { Container, FormButton } from "../../components";
 import ProfileImage from "../../assets/profile.png";
 import { Link, useNavigate } from "react-router-dom";
 import { useFormik } from "formik";
-import { usernameValidate } from "../../helpers/validate";
-import { useAuthStore } from "../../store/store.ts";
+import { usernameValidate } from "@/helpers/validate.ts";
+import { useAuthStore } from "@/store/store.ts";
 import { useState } from "preact/hooks";
 
 const Login = () => {
