@@ -46,35 +46,36 @@ export async function verifyUser(req, res, next) {
 export async function register(req, res) {
   try {
     const { userName, password, profile, email } = req.body;
-    // check the existing user
-    const existUsername = await UserModel.findOne({ userName });
-    const existEmail = await UserModel.findOne({ email });
-    if (existEmail && existUsername) {
-      return res
-        .status(302)
-        .json({ status: "FAILED", message: "email and username already used" });
-    }
 
-    if (existEmail) {
-      return res
-        .status(302)
-        .json({ status: "FAILED", message: "email already used" });
-    }
-
-    if (existUsername) {
-      return res
-        .status(302)
-        .json({ status: "FAILED", message: "username already used" });
-    }
+    // // check the existing user
+    // const existUsername = await UserModel.findOne({ userName });
+    // const existEmail = await UserModel.findOne({ email });
+    // if (existEmail && existUsername) {
+    //   return res
+    //     .status(302)
+    //     .json({ status: "FAILED", message: "email and username already used" });
+    // }
+    //
+    // if (existEmail) {
+    //   return res
+    //     .status(302)
+    //     .json({ status: "FAILED", message: "email already used" });
+    // }
+    //
+    // if (existUsername) {
+    //   return res
+    //     .status(302)
+    //     .json({ status: "FAILED", message: "username already used" });
+    // }
 
     // encrypting password
     const encryptedPassword = await bcrypt.hash(password, saltRound);
 
     UserModel.create({
+      email,
       userName,
       password: encryptedPassword,
       profile: profile || "",
-      email,
     })
       .then(() => {
         return res.status(201).json({
@@ -83,10 +84,12 @@ export async function register(req, res) {
         });
       })
       .catch((err) => {
+        const error_key = Object.keys(err.keyPattern);
+        const messageError = `${error_key.join().toLowerCase()} already used`;
         return res.status(404).json({
-          status: "Failed",
-          message: "Register User Failed",
-          error: err,
+          status: "FAILED",
+          message: messageError || "Register User Failed",
+          error: { field: error_key },
         });
       });
   } catch (error) {

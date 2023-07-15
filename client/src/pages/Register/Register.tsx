@@ -9,14 +9,22 @@ import { registerValidation } from "../../helpers/validate";
 import { REGISTER_REQUIREMENT } from "../../datas/general.ts";
 import { registerUser } from "../../helpers/fetch.ts";
 import { AxiosError, AxiosResponse } from "axios";
-import { IGeneralResponse } from "../../types/fetching.ts";
+import {
+  IGeneralResponse,
+  IRegisterUserErrorResponse,
+} from "../../types/fetching.ts";
 import toast from "react-hot-toast";
 import { STATUS_SUCCESS } from "../../datas/variables.ts";
 
+const initialStateFieldError = {
+  userName: false,
+  email: false,
+};
 const Register = () => {
   const [inputType, setInputType] = useState("password");
   const [file, setFile] = useState<File | any>();
   const [loading, setLoading] = useState(false);
+  const [fieldError, setFieldError] = useState(initialStateFieldError);
 
   const formik = useFormik({
     initialValues: {
@@ -31,6 +39,8 @@ const Register = () => {
     onSubmit: async (values) => {
       values = await Object.assign(values, { profile: file || "" });
       setLoading(true);
+      setFieldError(initialStateFieldError);
+
       try {
         const response: AxiosResponse<IGeneralResponse> = await registerUser(
           values,
@@ -41,12 +51,18 @@ const Register = () => {
           toast.success(message);
         }
       } catch (err) {
-        const errResponse = err as AxiosError<IGeneralResponse>;
+        const errResponse = err as AxiosError<IRegisterUserErrorResponse>;
 
-        const messageLength = errResponse?.response?.data.message.length || 40;
+        const message = errResponse?.response?.data.message;
+        const duration = message ? message.length * 60 : 2000;
+        const fieldError = errResponse?.response?.data?.error?.field;
 
-        toast.error(errResponse?.response?.data?.message, {
-          duration: messageLength * 60,
+        setFieldError((val) => ({
+          ...val,
+          [fieldError.join()]: true,
+        }));
+        toast.error(message, {
+          duration,
         });
       } finally {
         setLoading(false);
@@ -135,6 +151,8 @@ const Register = () => {
               placeholder="Email"
               className={`text-sm border w-full border-slate-100 pl-3 rounded-md  py-2 transition-all duration-200 focus:border-slate-300 placeholder:text-sm placeholder:text-center focus:placeholder:opacity-0  ${
                 isShown("email") ? "pr-12 border-slate-300" : "pr-3"
+              } ${
+                fieldError.email ? "bg-red-100 placeholder:text-stone-800" : ""
               }`}
             />
             {isShown("email") && (
@@ -156,6 +174,10 @@ const Register = () => {
               placeholder="Username"
               className={`text-sm border w-full border-slate-100 pl-3 rounded-md  py-2 transition-all duration-200 focus:border-slate-300 placeholder:text-sm placeholder:text-center focus:placeholder:opacity-0  ${
                 isShown("userName") ? "pr-12 border-slate-300" : "pr-3"
+              } ${
+                fieldError.userName
+                  ? "bg-red-100 placeholder:text-stone-800"
+                  : ""
               }`}
             />
             {isShown("userName") && (

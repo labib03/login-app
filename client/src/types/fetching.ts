@@ -50,3 +50,9 @@ export interface IUpdateUserErrorResponse {
   message: string;
   error: any;
 }
+
+export interface IRegisterUserErrorResponse {
+  status: string;
+  message: string;
+  error: any;
+}
