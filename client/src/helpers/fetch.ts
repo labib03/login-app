@@ -78,7 +78,6 @@ export async function verifyPassword({
 
 /** update user profile function */
 export async function updateUser(payload: UpdateUserProps) {
-  console.log("payload", payload);
   const token = await localStorage.getItem("token");
   return await api.put("/api/updateUser", payload, {
     headers: { Authorization: `Bearer ${token}` },

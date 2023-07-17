@@ -29,7 +29,6 @@ const Profile = () => {
 
   const navigate = useNavigate();
   const users = useGetUserDetail();
-  console.log("users", users);
 
   const formik = useFormik({
     initialValues: {
@@ -44,7 +43,7 @@ const Profile = () => {
     validateOnBlur: false,
     validateOnChange: false,
     onSubmit: async (values) => {
-      values = { ...values, profile: file || "" };
+      values = { ...values, profile: file || users?.profile || "" };
       setLoading(true);
       setFieldError(initialStateFieldError);
 

@@ -148,8 +148,6 @@ export async function login(req, res) {
 export async function getUser(req, res) {
   const { userName } = req.params;
 
-  console.log("userName", userName);
-
   try {
     const user = await UserModel.findOne({ userName });
 
@@ -161,13 +159,11 @@ export async function getUser(req, res) {
 
     /** remove password from user */
     const { password, ...rest } = Object.assign({}, user.toJSON());
-    return res
-      .status(201)
-      .json({
-        status: "SUCCESS",
-        message: "Get data user success",
-        data: rest,
-      });
+    return res.status(201).json({
+      status: "SUCCESS",
+      message: "Get data user success",
+      data: rest,
+    });
   } catch (error) {
     return res
       .status(404)

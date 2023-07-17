@@ -22,7 +22,6 @@ const useGetUserDetail = () => {
 
     fetchData();
   }, []);
-  console.log("userDetail", userDetail);
   return userDetail;
 };
 
