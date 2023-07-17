@@ -48,6 +48,8 @@ const Password = () => {
             password: values.password,
           });
 
+        toast.success("Success Login");
+
         const { token } = response.data;
         await localStorage.setItem("token", token);
         navigate("/profile");

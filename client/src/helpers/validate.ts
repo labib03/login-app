@@ -26,13 +26,17 @@ export async function usernameValidate(values: props) {
       await authenticate(values.userName);
     } catch (error) {
       if (isAxiosError(error)) {
-        return { userName: error?.response?.data.message };
+        return error?.response?.data.message;
       }
     }
     // check user exist or not
   }
 
-  return { userName };
+  if (userName) {
+    return { userName };
+  }
+
+  return;
 }
 
 /** validate password */
@@ -103,9 +107,9 @@ export function updateUserValidation(payload: UpdateUserProps) {
 /** validate username */
 function usernameVerify(values: props) {
   if (!values?.userName) {
-    return "Username Required...!";
+    return "Username Required";
   } else if (values?.userName?.includes(" ")) {
-    return "Invalid Username...!";
+    return "Invalid Username";
   }
 }
 
@@ -115,9 +119,9 @@ function passwordVerify(values: props) {
   const specialChars = /[`!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?~]/;
 
   if (!values.password) {
-    return "Password Required...!";
+    return "Password Required";
   } else if (values.password.includes(" ")) {
-    return "Invalid Password...!";
+    return "Invalid Password";
   } else if (values.password.length < 4) {
     return "Password must be more than 4 characters long";
   } else if (!specialChars.test(values.password)) {
@@ -128,10 +132,10 @@ function passwordVerify(values: props) {
 /** validate email */
 function emailVerify(values: props) {
   if (!values.email) {
-    return "Email Required...!";
+    return "Email Required";
   } else if (values.email.includes(" ")) {
-    return "Wrong Email...!";
+    return "Wrong Email";
   } else if (!/^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,4}$/i.test(values.email)) {
-    return "Invalid email address...!";
+    return "Invalid email address";
   }
 }

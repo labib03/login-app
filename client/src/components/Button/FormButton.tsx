@@ -1,9 +1,9 @@
 import { Loader } from "../index.ts";
-import { FC } from "preact/compat";
+import React, { FC } from "preact/compat";
 
 type Props = {
   loading?: boolean;
-  onClick: (e: Event) => void;
+  onClick: (e: React.JSX.TargetedMouseEvent<HTMLButtonElement>) => void;
   text: string;
 };
 const FormButton: FC<Props> = ({ loading, text, onClick }) => {
@@ -22,6 +22,7 @@ const FormButton: FC<Props> = ({ loading, text, onClick }) => {
 
   return (
     <button
+      type="button"
       disabled={loading}
       className="bg-emerald-400 rounded-md py-2 text-sm mt-2 transition-all duration-150 hover:bg-emerald-500 disabled:bg-gray-300 disabled:cursor-not-allowed"
       onClick={onClick}

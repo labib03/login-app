@@ -1,4 +1,4 @@
-import { Container, Loader } from "../../components";
+import { Container } from "../../components";
 import ProfileImage from "../../assets/profile.png";
 import { Link } from "react-router-dom";
 import { useFormik } from "formik";
@@ -15,6 +15,7 @@ import {
 } from "@/types/fetching.ts";
 import toast from "react-hot-toast";
 import { STATUS_SUCCESS } from "@/datas/variables.ts";
+import { BackButton, FormButton } from "@/components";
 
 const initialStateFieldError = {
   userName: false,
@@ -95,21 +96,16 @@ const Register = () => {
     setFile(base64);
   };
 
-  const renderButtonText = () => {
-    if (loading) {
-      return (
-        <div className="flex gap-1 items-center justify-center">
-          <Loader />
-          <h1>Loading ...</h1>
-        </div>
-      );
-    } else {
-      return <>Register</>;
-    }
+  const buttonHandler = (
+    e: React.JSX.TargetedMouseEvent<HTMLButtonElement>,
+  ) => {
+    e.preventDefault();
+    formik.handleSubmit();
   };
 
   return (
     <Container>
+      <BackButton />
       <div className="shadow-md rounded-xl px-12 py-14 max-w-sm text-center flex flex-col bg-white">
         <div className="w-full flex flex-col items-center gap-3 mb-8">
           <h1 className="text-3xl font-semibold">Register Page</h1>
@@ -144,51 +140,67 @@ const Register = () => {
         </div>
 
         <div className="flex flex-col gap-2">
-          <div className="relative w-full flex flex-col rounded-md overflow-hidden">
-            <input
-              {...formik.getFieldProps("email")}
-              type="text"
-              placeholder="Email"
-              className={`text-sm border w-full border-slate-100 pl-3 rounded-md  py-2 transition-all duration-200 focus:border-slate-300 placeholder:text-sm placeholder:text-center focus:placeholder:opacity-0  ${
-                isShown("email") ? "pr-12 border-slate-300" : "pr-3"
-              } ${
-                fieldError.email ? "bg-red-100 placeholder:text-stone-800" : ""
-              }`}
-            />
-            {isShown("email") && (
-              <button
-                className="h-full px-1.5 text-xs absolute right-0 top-0 bg-stone-50 border-t border-r border-b border-slate-300 rounded-e-md transition-all duration-200"
-                onClick={() => {
-                  fieldResetHandler("email");
-                }}
-              >
-                clear
-              </button>
+          <div>
+            <div className="relative w-full flex flex-col rounded-md overflow-hidden">
+              <input
+                {...formik.getFieldProps("email")}
+                type="text"
+                placeholder="Email"
+                className={`text-sm border w-full border-slate-100 pl-3 rounded-md  py-2 transition-all duration-200 focus:border-slate-300 placeholder:text-sm placeholder:text-center focus:placeholder:opacity-0  ${
+                  isShown("email") ? "pr-12 border-slate-300" : "pr-3"
+                } ${
+                  fieldError.email
+                    ? "bg-red-100 placeholder:text-stone-800"
+                    : ""
+                }`}
+              />
+              {isShown("email") && (
+                <button
+                  className="h-full px-1.5 text-xs absolute right-0 top-0 bg-stone-50 border-t border-r border-b border-slate-300 rounded-e-md transition-all duration-200"
+                  onClick={() => {
+                    fieldResetHandler("email");
+                  }}
+                >
+                  clear
+                </button>
+              )}
+            </div>
+            {formik.errors.email && (
+              <small className={"text-xs flex justify-start text-red-600"}>
+                {formik.errors.email}
+              </small>
             )}
           </div>
 
-          <div className="relative w-full flex flex-col rounded-md overflow-hidden">
-            <input
-              {...formik.getFieldProps("userName")}
-              type="text"
-              placeholder="Username"
-              className={`text-sm border w-full border-slate-100 pl-3 rounded-md  py-2 transition-all duration-200 focus:border-slate-300 placeholder:text-sm placeholder:text-center focus:placeholder:opacity-0  ${
-                isShown("userName") ? "pr-12 border-slate-300" : "pr-3"
-              } ${
-                fieldError.userName
-                  ? "bg-red-100 placeholder:text-stone-800"
-                  : ""
-              }`}
-            />
-            {isShown("userName") && (
-              <button
-                className="h-full px-1.5 text-xs absolute right-0 top-0 bg-stone-50 border-t border-r border-b border-slate-300 rounded-e-md transition-all duration-200"
-                onClick={() => {
-                  fieldResetHandler("userName");
-                }}
-              >
-                clear
-              </button>
+          <div>
+            <div className="relative w-full flex flex-col rounded-md overflow-hidden">
+              <input
+                {...formik.getFieldProps("userName")}
+                type="text"
+                placeholder="Username"
+                className={`text-sm border w-full border-slate-100 pl-3 rounded-md  py-2 transition-all duration-200 focus:border-slate-300 placeholder:text-sm placeholder:text-center focus:placeholder:opacity-0  ${
+                  isShown("userName") ? "pr-12 border-slate-300" : "pr-3"
+                } ${
+                  fieldError.userName
+                    ? "bg-red-100 placeholder:text-stone-800"
+                    : ""
+                }`}
+              />
+              {isShown("userName") && (
+                <button
+                  className="h-full px-1.5 text-xs absolute right-0 top-0 bg-stone-50 border-t border-r border-b border-slate-300 rounded-e-md transition-all duration-200"
+                  onClick={() => {
+                    fieldResetHandler("userName");
+                  }}
+                >
+                  clear
+                </button>
+              )}
+            </div>
+            {formik.errors.userName && (
+              <small className={"flex justify-start text-red-600 text-xs"}>
+                {formik.errors.userName}
+              </small>
             )}
           </div>
 
@@ -210,6 +222,11 @@ const Register = () => {
               </button>
             )}
           </div>
+          {formik.errors.password && (
+            <small className={"flex justify-start text-red-600 text-xs"}>
+              {formik.errors.password}
+            </small>
+          )}
           <ul className="text-left list-disc list-inside decoration-green-300">
             {REGISTER_REQUIREMENT.password.map((item, index) => (
               <li key={index} className="text-[12px]">
@@ -219,17 +236,11 @@ const Register = () => {
           </ul>
         </div>
 
-        <button
-          type="submit"
-          className="bg-emerald-400 rounded-md py-2 text-sm mt-3 transition-all duration-150 hover:bg-emerald-500 disabled:bg-gray-300 disabled:cursor-not-allowed"
-          onClick={(e) => {
-            e.preventDefault();
-            formik.handleSubmit();
-          }}
-          disabled={loading}
-        >
-          {renderButtonText()}
-        </button>
+        <FormButton
+          onClick={buttonHandler}
+          text={"Register"}
+          loading={loading}
+        />
 
         <div className="mb-4 mt-5">
           <p className="text-xs">
