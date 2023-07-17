@@ -1,6 +1,8 @@
 import axios, { AxiosInstance } from "axios";
 import { ResponseFetchType, UpdateUserProps } from "../types/fetching.ts";
 import { BASE_URL } from "../datas/variables.ts";
+import jwtDecode from "jwt-decode";
+import { UserToken } from "@/types/general.ts";
 
 type ResponseProps = {
   data: ResponseFetchType;
@@ -19,14 +21,17 @@ export async function authenticate(userName: string) {
   });
 }
 
+/** To get username from Token */
+export function getUsernameFromToken() {
+  const token = localStorage.getItem("token");
+  if (!token) return "Cannot find Token";
+  const { userName } = jwtDecode<UserToken>(token);
+  return userName;
+}
+
 /** get User details */
-export async function getUser({ username }: { username: string }) {
-  try {
-    const { data } = await api.get(`/api/user/${username}`);
-    return { data };
-  } catch (error) {
-    return { error: "Password doesn't Match...!" };
-  }
+export async function getUser(userName: string) {
+  return await api.get(`/api/user/${userName}`);
 }
 
 /** register user function */
@@ -72,32 +77,33 @@ export async function verifyPassword({
 }
 
 /** update user profile function */
-export async function updateUser(response: UpdateUserProps) {
+export async function updateUser(payload: UpdateUserProps) {
+  console.log("payload", payload);
   const token = await localStorage.getItem("token");
-  return await api.put("/api/updateUser", response, {
+  return await api.put("/api/updateUser", payload, {
     headers: { Authorization: `Bearer ${token}` },
   });
 }
 
 /** generate OTP */
-export async function generateOTP(username: string) {
+export async function generateOTP(userName: string) {
   try {
     const { data: dataOTP, status }: ResponseProps = await api.get(
       "/api/generateOTP",
-      { params: { username } },
+      { params: { userName } },
     );
 
     const { code } = dataOTP;
 
     // send mail with the OTP
     if (status === 201) {
-      let { data } = await getUser({ username });
+      let { data } = await getUser(userName);
 
       const { email } = data;
 
       let text = `Your Password Recovery OTP is ${code}. Verify and recover your password.`;
       await api.post("/api/registerMail", {
-        username,
+        userName,
         userEmail: email,
         text,
         subject: "Password Recovery OTP",

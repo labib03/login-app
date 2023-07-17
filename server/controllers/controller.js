@@ -161,7 +161,13 @@ export async function getUser(req, res) {
 
     /** remove password from user */
     const { password, ...rest } = Object.assign({}, user.toJSON());
-    return res.status(201).json({ status: "SUCCESS", data: rest });
+    return res
+      .status(201)
+      .json({
+        status: "SUCCESS",
+        message: "Get data user success",
+        data: rest,
+      });
   } catch (error) {
     return res
       .status(404)

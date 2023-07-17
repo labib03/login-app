@@ -6,12 +6,24 @@ type DataResponse = {
   __v: number;
 };
 
+export type UserDetailType = {
+  _id: string;
+  userName: string;
+  email: string;
+  profile: string;
+  __v: number;
+  firstName: string;
+  lastName: string;
+  phoneNumber: string;
+};
+
 export type UpdateUserProps = {
   firstName?: string;
   lastName?: string;
   phoneNumber?: string;
   userName?: string;
   email?: string;
+  profile?: string;
 };
 
 export interface ResponseFetchType {
@@ -55,4 +67,10 @@ export interface IRegisterUserErrorResponse {
   status: string;
   message: string;
   error: any;
+}
+
+export interface IDetailUserResponse {
+  data: UserDetailType;
+  status: string;
+  message: string;
 }

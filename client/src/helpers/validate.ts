@@ -82,7 +82,11 @@ export function updateUserValidation(payload: UpdateUserProps) {
   const userName = usernameVerify(payload);
   const email = emailVerify(payload);
 
-  return { userName, email };
+  if (userName || email) {
+    return { userName, email };
+  }
+
+  return;
 
   // console.log("errors email", errorsEmail);
   // if (!payload.userName) {

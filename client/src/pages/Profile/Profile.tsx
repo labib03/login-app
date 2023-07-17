@@ -15,6 +15,7 @@ import toast from "react-hot-toast";
 import { updateUserValidation } from "../../helpers/validate.ts";
 // @ts-ignore
 import { JSXInternal } from "preact/src/jsx";
+import useGetUserDetail from "@/hooks/useGetUserDetail.tsx";
 
 const initialStateFieldError = {
   userName: false,
@@ -27,20 +28,23 @@ const Profile = () => {
   const [loading, setLoading] = useState(false);
 
   const navigate = useNavigate();
+  const users = useGetUserDetail();
+  console.log("users", users);
 
   const formik = useFormik({
     initialValues: {
-      firstName: "",
-      lastName: "",
-      email: "",
-      userName: "",
-      phoneNumber: "",
+      firstName: users?.firstName,
+      lastName: users?.lastName,
+      email: users?.email,
+      userName: users?.userName,
+      phoneNumber: users?.phoneNumber,
     },
     enableReinitialize: true,
     validate: updateUserValidation,
     validateOnBlur: false,
     validateOnChange: false,
     onSubmit: async (values) => {
+      values = { ...values, profile: file || "" };
       setLoading(true);
       setFieldError(initialStateFieldError);
 
@@ -73,8 +77,6 @@ const Profile = () => {
       }
     },
   });
-
-  console.log("formik error", formik.errors);
 
   const isShown = (type: string) => {
     const field = formik.getFieldProps(type);
@@ -123,7 +125,7 @@ const Profile = () => {
           >
             <img
               alt="profile image"
-              src={file || ProfileImage}
+              src={file || users?.profile || ProfileImage}
               className="w-2/5 overflow-hidden rounded-full border-2 border-white shadow-md"
             />
           </label>
