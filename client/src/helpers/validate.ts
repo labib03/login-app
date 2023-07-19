@@ -1,7 +1,7 @@
 import toast from "react-hot-toast";
 import { authenticate } from "./fetch.ts";
-import { isAxiosError } from "axios";
-import { UpdateUserProps } from "../types/fetching.ts";
+import { AxiosError } from "axios";
+import { IGeneralResponse, UpdateUserProps } from "../types/fetching.ts";
 
 type props = {
   firstName?: string | undefined;
@@ -25,9 +25,14 @@ export async function usernameValidate(values: props) {
     try {
       await authenticate(values.userName);
     } catch (error) {
-      if (isAxiosError(error)) {
-        return error?.response?.data.message;
-      }
+      const errResponse = error as AxiosError<IGeneralResponse>;
+      const message = errResponse?.response?.data?.message;
+
+      toast.error(message, {
+        duration: message ? message.length * 70 : 2000,
+      });
+
+      return errResponse?.response?.data;
     }
     // check user exist or not
   }

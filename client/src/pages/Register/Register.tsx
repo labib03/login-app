@@ -14,15 +14,13 @@ import {
   IRegisterUserErrorResponse,
 } from "@/types/fetching.ts";
 import toast from "react-hot-toast";
-import { STATUS_SUCCESS } from "@/datas/variables.ts";
-import { BackButton, FormButton } from "@/components";
+import { BackButton, FormButton, InputPassword, InputText } from "@/components";
 
 const initialStateFieldError = {
   userName: false,
   email: false,
 };
 const Register = () => {
-  const [inputType, setInputType] = useState("password");
   const [file, setFile] = useState<File | any>();
   const [loading, setLoading] = useState(false);
   const [fieldError, setFieldError] = useState(initialStateFieldError);
@@ -46,48 +44,28 @@ const Register = () => {
         const response: AxiosResponse<IGeneralResponse> = await registerUser(
           values,
         );
-
-        const { status, message } = response.data;
-        if (status === STATUS_SUCCESS) {
-          toast.success(message);
-        }
+        const { message } = response.data;
+        toast.success(message);
       } catch (err) {
         const errResponse = err as AxiosError<IRegisterUserErrorResponse>;
 
         const message = errResponse?.response?.data.message;
-        const duration = message ? message.length * 60 : 2000;
+        console.log("message", message);
+        const duration = message ? message.length * 100 : 2000;
         const fieldError = errResponse?.response?.data?.error?.field;
+        toast.error(message, {
+          duration,
+        });
 
         setFieldError((val) => ({
           ...val,
           [fieldError.join()]: true,
         }));
-        toast.error(message, {
-          duration,
-        });
       } finally {
         setLoading(false);
       }
     },
   });
-
-  const isShown = (type: string) => {
-    const field = formik.getFieldProps(type);
-    return field.value ? field.value.length > 0 : false;
-  };
-
-  const changeTypeHandler = () => {
-    if (inputType === "password") {
-      setInputType("text");
-    } else {
-      setInputType("password");
-    }
-  };
-
-  const fieldResetHandler = (field: string) => {
-    const handler = formik.getFieldHelpers(field);
-    handler.setValue("");
-  };
 
   // for handle file upload, cuz formik doesn't support file upload
   const onUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -140,100 +118,28 @@ const Register = () => {
         </div>
 
         <div className="flex flex-col gap-2">
-          <div>
-            <div className="relative w-full flex flex-col rounded-md overflow-hidden">
-              <input
-                {...formik.getFieldProps("email")}
-                type="text"
-                placeholder="Email"
-                className={`text-sm border w-full border-slate-100 pl-3 rounded-md  py-2 transition-all duration-200 focus:border-slate-300 placeholder:text-sm placeholder:text-center focus:placeholder:opacity-0  ${
-                  isShown("email") ? "pr-12 border-slate-300" : "pr-3"
-                } ${
-                  fieldError.email
-                    ? "bg-red-100 placeholder:text-stone-800"
-                    : ""
-                }`}
-              />
-              {isShown("email") && (
-                <button
-                  className="h-full px-1.5 text-xs absolute right-0 top-0 bg-stone-50 border-t border-r border-b border-slate-300 rounded-e-md transition-all duration-200"
-                  onClick={() => {
-                    fieldResetHandler("email");
-                  }}
-                >
-                  clear
-                </button>
-              )}
-            </div>
-            {formik.errors.email && (
-              <small className={"text-xs flex justify-start text-red-600"}>
-                {formik.errors.email}
-              </small>
-            )}
-          </div>
+          <InputText
+            formik={formik}
+            field={"email"}
+            placeholder={"Email Address"}
+          />
+
+          <InputText
+            formik={formik}
+            field={"userName"}
+            placeholder={"User Name"}
+          />
 
           <div>
-            <div className="relative w-full flex flex-col rounded-md overflow-hidden">
-              <input
-                {...formik.getFieldProps("userName")}
-                type="text"
-                placeholder="Username"
-                className={`text-sm border w-full border-slate-100 pl-3 rounded-md  py-2 transition-all duration-200 focus:border-slate-300 placeholder:text-sm placeholder:text-center focus:placeholder:opacity-0  ${
-                  isShown("userName") ? "pr-12 border-slate-300" : "pr-3"
-                } ${
-                  fieldError.userName
-                    ? "bg-red-100 placeholder:text-stone-800"
-                    : ""
-                }`}
-              />
-              {isShown("userName") && (
-                <button
-                  className="h-full px-1.5 text-xs absolute right-0 top-0 bg-stone-50 border-t border-r border-b border-slate-300 rounded-e-md transition-all duration-200"
-                  onClick={() => {
-                    fieldResetHandler("userName");
-                  }}
-                >
-                  clear
-                </button>
-              )}
-            </div>
-            {formik.errors.userName && (
-              <small className={"flex justify-start text-red-600 text-xs"}>
-                {formik.errors.userName}
-              </small>
-            )}
+            <InputPassword formik={formik} withValidation />
+            <ul className="text-left list-disc list-inside decoration-green-300">
+              {REGISTER_REQUIREMENT.password.map((item, index) => (
+                <li key={index} className="text-[12px]">
+                  {item}
+                </li>
+              ))}
+            </ul>
           </div>
-
-          <div className="relative w-full flex flex-col rounded-md overflow-hidden">
-            <input
-              {...formik.getFieldProps("password")}
-              type={inputType}
-              placeholder="Password"
-              className={`text-sm border w-full border-slate-100 pl-3 rounded-md  py-2 transition-all duration-200 focus:border-slate-300 placeholder:text-sm placeholder:text-center focus:placeholder:opacity-0  ${
-                isShown("password") ? "pr-12 border-slate-300" : "pr-3"
-              }`}
-            />
-            {isShown("password") && (
-              <button
-                className="h-full px-1.5 text-xs absolute right-0 top-0 bg-stone-50 border-t border-r border-b border-slate-300 rounded-e-md transition-all duration-200"
-                onClick={changeTypeHandler}
-              >
-                {inputType === "password" ? "show" : "hide"}
-              </button>
-            )}
-          </div>
-          {formik.errors.password && (
-            <small className={"flex justify-start text-red-600 text-xs"}>
-              {formik.errors.password}
-            </small>
-          )}
-          <ul className="text-left list-disc list-inside decoration-green-300">
-            {REGISTER_REQUIREMENT.password.map((item, index) => (
-              <li key={index} className="text-[12px]">
-                {item}
-              </li>
-            ))}
-          </ul>
         </div>
 
         <FormButton

@@ -4,19 +4,19 @@ import { Link, useNavigate } from "react-router-dom";
 import ProfileImage from "../../assets/profile.png";
 import { BackButton, Container, FormButton } from "../../components";
 import useFetch from "../../hooks/useFetch.ts";
-import { useAuthStore } from "../../store/store.ts";
+import { useAuthStore } from "@/store/store.ts";
 import toast from "react-hot-toast";
-import { verifyPassword } from "../../helpers/fetch.ts";
+import { verifyPassword } from "@/helpers/fetch.ts";
 import { AxiosError, AxiosResponse } from "axios";
 import {
   ILoginErrorResponse,
   ILoginSuccessResponse,
-} from "../../types/fetching.ts";
+} from "@/types/fetching.ts";
 // @ts-ignore
 import { JSXInternal } from "preact/src/jsx";
+import { InputPassword } from "@/components";
 
 const Password = () => {
-  const [inputType, setInputType] = useState("password");
   const [loading, setLoading] = useState(false);
 
   const { auth } = useAuthStore();
@@ -58,25 +58,13 @@ const Password = () => {
         const message = errResponse?.response?.data.message;
         const messageLength = message?.length || 40;
         toast.error(message, {
-          duration: messageLength * 60,
+          duration: messageLength * 100,
         });
       } finally {
         setLoading(false);
       }
     },
   });
-
-  const isHasValue = formik?.values?.password?.length
-    ? formik?.values?.password?.length > 0
-    : false;
-
-  const changeTypeHandler = () => {
-    if (inputType === "password") {
-      setInputType("text");
-    } else {
-      setInputType("password");
-    }
-  };
 
   const buttonHandler = (
     e: JSXInternal.TargetedMouseEvent<HTMLButtonElement>,
@@ -107,24 +95,7 @@ const Password = () => {
           />
         </div>
 
-        <div className="relative w-full flex flex-col rounded-md overflow-hidden">
-          <input
-            {...formik.getFieldProps("password")}
-            type={inputType}
-            placeholder="Password"
-            className={`border w-full border-slate-100 pl-3 rounded-md text-sm py-2 transition-all duration-200 focus:border-slate-300 placeholder:text-sm placeholder:text-center focus:placeholder:opacity-0  ${
-              isHasValue ? "pr-12 border-slate-300" : "pr-3"
-            }`}
-          />
-          {isHasValue && (
-            <button
-              className="h-full px-1.5 text-xs absolute right-0 top-0 bg-stone-50 border-t border-r border-b border-slate-300 rounded-e-md"
-              onClick={changeTypeHandler}
-            >
-              {inputType === "password" ? "show" : "hide"}
-            </button>
-          )}
-        </div>
+        <InputPassword formik={formik} />
 
         <FormButton onClick={buttonHandler} text="Sign In" loading={loading} />
 
