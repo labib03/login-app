@@ -4,9 +4,15 @@ import { useState } from "preact/hooks";
 const InputPassword = ({
   formik,
   withValidation,
+  isDisabled = false,
+  formikField = "password",
+  placeholder = "Password",
 }: {
   formik: FormikFormProps;
   withValidation?: boolean;
+  isDisabled?: boolean;
+  formikField?: string;
+  placeholder?: string;
 }) => {
   const [inputType, setInputType] = useState("password");
 
@@ -19,7 +25,7 @@ const InputPassword = ({
   };
 
   const isHasValue = () => {
-    const field = formik.getFieldProps("password");
+    const field = formik.getFieldProps(formikField);
     return field.value ? String(field.value).length > 0 : false;
   };
 
@@ -27,10 +33,11 @@ const InputPassword = ({
     <div className="mb-2">
       <div className="relative w-full flex flex-col rounded-md overflow-hidden">
         <input
-          {...formik.getFieldProps("password")}
+          {...formik.getFieldProps(formikField)}
           type={inputType}
-          placeholder="Password"
-          className={`border w-full border-slate-100 pl-3 rounded-md text-sm py-2 transition-all duration-200 focus:border-slate-300 placeholder:text-sm placeholder:text-center focus:placeholder:opacity-0  ${
+          disabled={isDisabled}
+          placeholder={placeholder}
+          className={`border w-full border-slate-100 pl-3 rounded-md text-sm py-2 transition-all duration-200 focus:border-slate-300 placeholder:text-sm placeholder:text-center focus:placeholder:opacity-0 disabled:bg-stone-100 disabled:cursor-not-allowed ${
             isHasValue() ? "pr-12 border-slate-300" : "pr-3"
           }`}
         />
@@ -44,9 +51,9 @@ const InputPassword = ({
         )}
       </div>
       {withValidation
-        ? formik.errors.password && (
+        ? formik.errors[formikField] && (
             <small className={"flex justify-start text-red-600 text-xs"}>
-              {formik.errors.password}
+              {formik.errors[formikField]}
             </small>
           )
         : undefined}

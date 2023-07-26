@@ -70,6 +70,7 @@ export const mailController = async (req, res) => {
       return res.status(200).send({
         status: "SUCCESS",
         message: "You should receive an email from us.",
+        // data: req.app.locals,
       });
     })
     .catch((error) =>

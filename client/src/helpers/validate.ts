@@ -51,14 +51,25 @@ export async function passwordValidate(values: props) {
 }
 
 /** validate reset password */
-export async function resetPasswordValidation(values: props) {
+export async function resetPasswordValidation(values: {
+  password: string;
+  confirm_password: string;
+}) {
   const password = passwordVerify(values);
+  const confirm_password =
+    values.password !== values.confirm_password
+      ? "Password not match...!"
+      : undefined;
 
-  if (values.password !== values.confirm_password) {
-    return toast.error("Password not match...!");
+  if (password) {
+    return { password };
   }
 
-  return { password };
+  if (confirm_password) {
+    return { confirm_password };
+  }
+
+  return;
 }
 
 /** validate register form */

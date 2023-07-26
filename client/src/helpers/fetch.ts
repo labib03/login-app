@@ -1,13 +1,8 @@
 import axios, { AxiosInstance } from "axios";
-import { ResponseFetchType, UpdateUserProps } from "../types/fetching.ts";
+import { UpdateUserProps } from "../types/fetching.ts";
 import { BASE_URL } from "../datas/variables.ts";
 import jwtDecode from "jwt-decode";
 import { UserToken } from "@/types/general.ts";
-
-type ResponseProps = {
-  data: ResponseFetchType;
-  status?: number;
-};
 
 export const api: AxiosInstance = axios.create({
   baseURL: BASE_URL,
@@ -104,19 +99,11 @@ export async function verifyOTP({
 
 /** reset password */
 export async function resetPassword({
-  username,
+  id,
   password,
 }: {
-  username: string;
+  id: string;
   password: string;
 }) {
-  try {
-    const { data, status }: ResponseProps = await api.put(
-      "/api/resetPassword",
-      { username, password },
-    );
-    return Promise.resolve({ data, status });
-  } catch (error) {
-    return Promise.reject({ error });
-  }
+  return await api.put("/api/resetPassword", { id, password });
 }
