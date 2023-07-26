@@ -3,7 +3,6 @@ import { useState } from "preact/hooks";
 import { Link, useNavigate } from "react-router-dom";
 import ProfileImage from "../../assets/profile.png";
 import { BackButton, Container, FormButton } from "../../components";
-import useFetch from "../../hooks/useFetch.ts";
 import { useAuthStore } from "@/store/store.ts";
 import toast from "react-hot-toast";
 import { verifyPassword } from "@/helpers/fetch.ts";
@@ -15,22 +14,16 @@ import {
 // @ts-ignore
 import { JSXInternal } from "preact/src/jsx";
 import { InputPassword } from "@/components";
+import useGetUserDetail from "@/hooks/useGetUserDetail.tsx";
 
 const Password = () => {
   const [loading, setLoading] = useState(false);
 
   const { auth } = useAuthStore();
-  const responseUseFetch = useFetch(`/user/${auth.userName}`);
+
+  const USER = useGetUserDetail(auth.userName);
+
   const navigate = useNavigate();
-
-  const { data } = responseUseFetch;
-
-  const userData = data.apiData?.data;
-  const errorServerResponse = data.serverError;
-
-  if (errorServerResponse) {
-    toast.error(errorServerResponse.message);
-  }
 
   const formik = useFormik({
     initialValues: {
@@ -80,7 +73,7 @@ const Password = () => {
         <div className="w-full flex flex-col items-center gap-2 mb-8">
           <div>
             <h1 className="text-3xl font-semibold">Welcome Back</h1>
-            <h1 className="text-2xl font-medium">{userData?.username}</h1>
+            <h1 className="text-2xl font-medium">{USER.userName}</h1>
           </div>
           <p className="text-gray-400 text-xs max-w-[16rem]">
             And now please enter your password to get in
@@ -90,7 +83,7 @@ const Password = () => {
         <div className="w-full text-center flex items-center justify-center mb-8">
           <img
             alt="profile image"
-            src={userData?.profile || ProfileImage}
+            src={USER.profile || ProfileImage}
             className="w-2/4 rounded-full border-2 border-white shadow-md"
           />
         </div>

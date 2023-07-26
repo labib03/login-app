@@ -219,8 +219,8 @@ export async function updateUser(req, res) {
 }
 
 /** GET: http://localhost:8080/api/generateOTP */
-export async function generateOTP(req, res) {
-  const { userName } = req.query;
+export async function generateOTP(req, res, next) {
+  const { userName } = req.body;
   try {
     req.app.locals.OTP = await otpGenerator.generate(6, {
       lowerCaseAlphabets: false,
@@ -228,7 +228,7 @@ export async function generateOTP(req, res) {
       specialChars: false,
     });
     req.app.locals.userName = userName;
-    return res.status(201).json({ code: req.app.locals.OTP });
+    next();
   } catch (error) {
     return res
       .status(500)

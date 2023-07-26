@@ -2,6 +2,7 @@ import Mailgen from "mailgen";
 import nodemailer from "nodemailer";
 
 import ENV from "../config.js";
+import UserModel from "../models/User.model.js";
 
 // https://ethereal.email/create
 let nodeConfig = {
@@ -33,26 +34,32 @@ let MailGenerator = new Mailgen({
 }
 */
 export const mailController = async (req, res) => {
-  const { username, userEmail, text, subject } = req.body;
+  const { userName } = req.body;
+  const { OTP } = req.app.locals;
+
+  const user = await UserModel.findOne({ userName });
+
+  const OtpText = `Your Password Recovery OTP is ${OTP}. Verify and recover your password.`;
+  const OtpSubject = "Password Recovery OTP";
 
   // body of the email
-  const email = {
+  const bodyEmail = {
     body: {
-      name: username,
-      intro:
-        text ||
-        "Welcome to Auther Community! We're very excited to have you on our community.",
+      name: userName,
+      intro: OTP
+        ? OtpText
+        : "Welcome to Author Community! We're very excited to have you on our community.",
       outro:
         "Need help, or have questions? Just reply to this email, we'd love to help.",
     },
   };
 
-  const emailBody = MailGenerator.generate(email);
+  const emailBody = MailGenerator.generate(bodyEmail);
 
   const message = {
     from: ENV.EMAIL,
-    to: userEmail,
-    subject: subject || "Signup Successful",
+    to: user.email,
+    subject: OTP ? OtpSubject : "Signup Successful",
     html: emailBody,
   };
 
@@ -66,8 +73,10 @@ export const mailController = async (req, res) => {
       });
     })
     .catch((error) =>
-      res
-        .status(500)
-        .send({ status: "FAILED", message: "Something went wrong", error })
+      res.status(500).send({
+        status: "FAILED",
+        message: "Failed to send email",
+        error,
+      }),
     );
 };

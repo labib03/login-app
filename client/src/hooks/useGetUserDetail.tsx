@@ -3,13 +3,26 @@ import { useEffect, useState } from "preact/hooks";
 import { AxiosResponse } from "axios";
 import { IDetailUserResponse, UserDetailType } from "@/types/fetching.ts";
 
-const useGetUserDetail = () => {
-  const [userDetail, setUserDetail] = useState<UserDetailType>();
+const initialData = {
+  _id: "",
+  userName: "",
+  email: "",
+  profile: "",
+  __v: 0,
+  firstName: "",
+  lastName: "",
+  phoneNumber: "",
+};
+
+const useGetUserDetail = (payloadUserName?: string) => {
+  const [userDetail, setUserDetail] = useState<UserDetailType>(initialData);
 
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const userName = getUsernameFromToken();
+        const userName = payloadUserName
+          ? payloadUserName
+          : getUsernameFromToken();
         const {
           data: { data: userData },
         }: AxiosResponse<IDetailUserResponse> = await getUser(userName);

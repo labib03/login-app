@@ -85,51 +85,21 @@ export async function updateUser(payload: UpdateUserProps) {
 }
 
 /** generate OTP */
-export async function generateOTP(userName: string) {
-  try {
-    const { data: dataOTP, status }: ResponseProps = await api.get(
-      "/api/generateOTP",
-      { params: { userName } },
-    );
-
-    const { code } = dataOTP;
-
-    // send mail with the OTP
-    if (status === 201) {
-      let { data } = await getUser(userName);
-
-      const { email } = data;
-
-      let text = `Your Password Recovery OTP is ${code}. Verify and recover your password.`;
-      await api.post("/api/registerMail", {
-        userName,
-        userEmail: email,
-        text,
-        subject: "Password Recovery OTP",
-      });
-    }
-    return Promise.resolve(code);
-  } catch (error) {
-    return Promise.reject({ error });
-  }
+export async function generateOTP({ userName }: { userName: string }) {
+  return await api.post("/api/generateOTP", { userName });
 }
 
 /** verify OTP */
 export async function verifyOTP({
-  username,
+  userName,
   code,
 }: {
-  username: string;
+  userName: string;
   code: string;
 }) {
-  try {
-    const { data, status }: ResponseProps = await api.get("/api/verifyOTP", {
-      params: { username, code },
-    });
-    return { data, status };
-  } catch (error) {
-    return Promise.reject(error);
-  }
+  return await api.get("/api/verifyOTP", {
+    params: { userName: userName, code: code },
+  });
 }
 
 /** reset password */
