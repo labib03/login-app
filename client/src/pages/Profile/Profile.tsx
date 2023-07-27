@@ -10,7 +10,7 @@ import { AxiosError, AxiosResponse } from "axios";
 import {
   IGeneralResponse,
   IUpdateUserErrorResponse,
-} from "@/types/fetching.ts";
+} from "@/types/fetch.type.ts";
 import toast from "react-hot-toast";
 import { updateUserValidation } from "@/helpers/validate.ts";
 // @ts-ignore

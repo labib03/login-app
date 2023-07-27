@@ -1,7 +1,7 @@
 import { getUser, getUsernameFromToken } from "@/helpers/fetch.ts";
 import { useEffect, useState } from "preact/hooks";
 import { AxiosResponse } from "axios";
-import { IDetailUserResponse, UserDetailType } from "@/types/fetching.ts";
+import { IDetailUserResponse, UserDetailType } from "@/types/fetch.type.ts";
 
 const initialData = {
   _id: "",

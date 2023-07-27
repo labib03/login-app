@@ -1,7 +1,7 @@
 import { AxiosError } from "axios";
 import { useEffect, useState } from "preact/hooks";
 import { api } from "../helpers/fetch.ts";
-import { ResponseFetchType } from "../types/fetching.ts";
+import { ResponseFetchType } from "../types/fetch.type.ts";
 
 type Types = {
   isLoading: boolean;

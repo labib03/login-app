@@ -7,7 +7,7 @@ import { useAuthStore } from "@/store/store.ts";
 import { useState } from "preact/hooks";
 import useGetUserDetail from "@/hooks/useGetUserDetail.tsx";
 import { AxiosError, AxiosResponse } from "axios";
-import { IGeneralResponse } from "@/types/fetching.ts";
+import { IGeneralResponse } from "@/types/fetch.type.ts";
 import { resetPassword } from "@/helpers/fetch.ts";
 import toast from "react-hot-toast";
 import { wait } from "@/helpers/general.ts";

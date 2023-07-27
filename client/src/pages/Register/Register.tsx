@@ -12,7 +12,7 @@ import { AxiosError, AxiosResponse } from "axios";
 import {
   IGeneralResponse,
   IRegisterUserErrorResponse,
-} from "@/types/fetching.ts";
+} from "@/types/fetch.type.ts";
 import toast from "react-hot-toast";
 import { BackButton, FormButton, InputPassword, InputText } from "@/components";
 
@@ -50,7 +50,6 @@ const Register = () => {
         const errResponse = err as AxiosError<IRegisterUserErrorResponse>;
 
         const message = errResponse?.response?.data.message;
-        console.log("message", message);
         const duration = message ? message.length * 100 : 2000;
         const fieldError = errResponse?.response?.data?.error?.field;
         toast.error(message, {
@@ -122,12 +121,20 @@ const Register = () => {
             formik={formik}
             field={"email"}
             placeholder={"Email Address"}
+            withErrorResponse={fieldError.email}
+            customAction={() => {
+              setFieldError({ ...fieldError, email: false });
+            }}
           />
 
           <InputText
             formik={formik}
             field={"userName"}
             placeholder={"User Name"}
+            withErrorResponse={fieldError.userName}
+            customAction={() => {
+              setFieldError({ ...fieldError, userName: false });
+            }}
           />
 
           <div>

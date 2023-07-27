@@ -10,7 +10,7 @@ import { AxiosError, AxiosResponse } from "axios";
 import {
   ILoginErrorResponse,
   ILoginSuccessResponse,
-} from "@/types/fetching.ts";
+} from "@/types/fetch.type.ts";
 // @ts-ignore
 import { JSXInternal } from "preact/src/jsx";
 import { InputPassword } from "@/components";

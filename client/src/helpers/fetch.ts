@@ -1,8 +1,8 @@
 import axios, { AxiosInstance } from "axios";
-import { UpdateUserProps } from "../types/fetching.ts";
+import { UpdateUserProps } from "../types/fetch.type.ts";
 import { BASE_URL } from "../datas/variables.ts";
 import jwtDecode from "jwt-decode";
-import { UserToken } from "@/types/general.ts";
+import { UserToken } from "@/types/general.type.ts";
 
 export const api: AxiosInstance = axios.create({
   baseURL: BASE_URL,

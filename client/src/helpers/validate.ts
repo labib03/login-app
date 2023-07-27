@@ -1,7 +1,7 @@
 import toast from "react-hot-toast";
 import { authenticate } from "./fetch.ts";
 import { AxiosError } from "axios";
-import { IGeneralResponse, UpdateUserProps } from "../types/fetching.ts";
+import { IGeneralResponse, UpdateUserProps } from "../types/fetch.type.ts";
 
 type props = {
   firstName?: string | undefined;

@@ -5,15 +5,24 @@ type Props = {
   formik: FormikFormProps;
   field: string;
   placeholder: string;
+  withErrorResponse?: boolean;
+  customAction?: () => void;
 };
 
-const InputText: FC<Props> = ({ formik, field, placeholder }) => {
+const InputText: FC<Props> = ({
+  formik,
+  field,
+  placeholder,
+  withErrorResponse = false,
+  customAction = () => {},
+}) => {
   const isHasValue = (type: string) => {
     const field = formik.getFieldProps(type);
     return field.value ? String(field.value).length > 0 : false;
   };
 
   const fieldResetHandler = (field: string) => {
+    customAction();
     const handler = formik.getFieldHelpers(field);
     handler.setValue("");
   };
@@ -27,6 +36,10 @@ const InputText: FC<Props> = ({ formik, field, placeholder }) => {
           placeholder={placeholder}
           className={`text-sm border w-full border-slate-100 pl-3 rounded-md  py-2 transition-all duration-200 focus:border-slate-300 placeholder:text-sm placeholder:text-center focus:placeholder:opacity-0  ${
             isHasValue(field) ? "pr-12 border-slate-300" : "pr-3"
+          } ${
+            withErrorResponse
+              ? "bg-red-200 border-red-200 placeholder:text-black"
+              : ""
           }`}
         />
         {isHasValue(field) && (
